@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Crush</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg: #F5F5F7;
+  --surface: #FFFFFF;
+  --surface2: #F0F0F5;
+  --surface3: #E8E8EE;
+  --border: #E0E0EA;
+  --border2: #E8E8EE;
+  --text: #0A0A0A;
+  --muted: #6E6E82;
+  --muted2: #8E8EA0;
+  --love: #0A0A0A;
+  --hate: #8E8EA0;
+  --love-dim: rgba(10,10,10,0.06);
+  --hate-dim: rgba(142,142,160,0.1);
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 20px;
+  height: 100vh;
+  justify-content: center;
+}
+.screen.active { display: flex; }
+#screen-swipe { padding: 90px 20px 24px; }
+
+/* ── INDUSTRY SCREEN ── */
+.main-title {
+  font-size: clamp(1.5rem, 5vw, 1.9rem); font-weight: 700;
+  line-height: 1.15; letter-spacing: -0.02em;
+}
+.main-step {
+  font-size: 0.75rem; font-weight: 500; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.main-sub { color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+.industry-grid { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.industry-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); padding: 9px 16px; border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.84rem; font-weight: 500;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  display: flex; align-items: center; gap: 7px; flex-shrink: 0;
+}
+.industry-btn:hover { background: var(--surface2); }
+.industry-btn:active { transform: scale(0.94); background: #0A0A0A; color: #FFF; border-color: #0A0A0A; }
+.ind-icon { font-size: 0.95rem; line-height: 1; }
+.ind-label { font-size: 0.84rem; font-weight: 500; }
+.ind-meta { display: none; }
+.ind-count { display: none; }
+
+/* ── TOP BAR ── */
+.top-bar {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; padding: 14px 22px 0;
+  display: flex; flex-direction: column; gap: 14px; z-index: 100;
+  background: var(--bg);
+}
+.top-bar-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.top-bar-center {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.top-bar-title {
+  font-size: 0.8rem; font-weight: 600; color: var(--text); line-height: 1;
+}
+.top-bar-count {
+  font-size: 0.73rem; font-weight: 400; color: var(--muted2);
+}
+.back-btn {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+}
+.back-btn .material-symbols-rounded { font-size: 18px; }
+.back-btn:hover { background: var(--surface2); }
+.top-bar-icon-btn {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.top-bar-icon-btn .material-symbols-rounded { font-size: 18px; }
+.progress-bar { height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--text); border-radius: 100px; transition: width 0.3s ease; width: 0%; }
+.progress-label { display: none; }
+
+/* ── SWIPE SCREEN ── */
+.card-area {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; flex:1; width: 100%; padding: 0 20px;
+}
+.card-stack { position: relative; width: 100%; max-width: 342px; height: 380px; }
+.card-bg {
+  position: absolute; width: 100%; height: 100%;
+  border-radius: 28px; background: var(--surface); border: 1px solid var(--border2);
+}
+.card-bg:nth-child(1) { transform: scale(0.90) translateY(18px); opacity: 0.3; }
+.card-bg:nth-child(2) { transform: scale(0.95) translateY(9px); opacity: 0.55; }
+
+.logo-card {
+  position: absolute; top:0; left:0; width:100%; height:100%;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 28px; display: flex; flex-direction: column;
+  overflow: hidden;
+  cursor: grab; user-select: none; touch-action: none; will-change: transform;
+}
+.logo-card:active { cursor: grabbing; }
+
+/* industry tag inside card */
+.card-industry-tag {
+  padding: 16px 16px 0 16px;
+  display: flex; justify-content: center;
+}
+.card-industry-tag-inner {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg); border-radius: 100px; padding: 5px 12px;
+  font-size: 0.73rem; font-weight: 500; color: var(--muted2);
+}
+
+.logo-stage {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 24px 20px;
+}
+.logo-stage-inner {
+  width: 120px; height: 120px; background: var(--bg); border-radius: 26px;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.logo-stage-inner img {
+  width: 100%; height: 100%;
+  object-fit: fill; display: block;
+}
+.logo-fallback {
+  width: 64px; height: 64px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 700; color: #fff;
+}
+
+.card-info {
+  padding: 0 16px 16px 16px;
+}
+.card-name { font-size: 1.2rem; color: var(--text); font-weight: 700; margin-bottom: 3px; }
+.card-industry-badge { font-size: 0.8rem; color: var(--muted2); font-weight: 400; }
+.card-note-indicator {
+  margin-top: 10px; font-size: 0.7rem; color: var(--muted);
+  background: var(--surface2); border: 1px solid var(--border2);
+  padding: 3px 10px; border-radius: 20px; display: none;
+}
+.card-note-indicator.has-note { display: inline-block; color: #7c6af5; border-color: rgba(124,106,245,0.3); }
+
+.card-note-row {
+  display: flex; align-items: center; gap: 8px;
+  border-top: 1px solid var(--surface2); padding: 12px 16px;
+  color: var(--surface3); cursor: pointer;
+}
+.card-note-row .material-symbols-rounded { font-size: 17px; color: var(--muted2); }
+.card-note-row-text { font-size: 0.82rem; color: var(--muted2); }
+
+.card-label-love, .card-label-hate {
+  position: absolute; padding: 5px 12px; border-radius: 7px;
+  font-weight: 700; font-size: 0.88rem; letter-spacing: 0.06em;
+  opacity: 0; pointer-events: none; top: 22px;
+}
+.card-label-love { right: 18px; color: #16a34a; border: 2px solid #16a34a; }
+.card-label-hate { left: 18px; color: #dc2626; border: 2px solid #dc2626; }
+
+/* ── ACTION ROW (swipe screen) ── */
+.action-hints {
+  display: flex; gap: 24px; margin-top: 24px;
+  align-items: center; justify-content: center; width: 100%;
+}
+.hint-btn-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.hint-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid var(--border2);
+  background: var(--surface); color: var(--muted2);
+  cursor: pointer; transition: all 0.15s; user-select: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.hint-btn:hover { background: var(--surface2); }
+.hint-btn:active { transform: scale(0.92); }
+.hint-btn .material-symbols-rounded { font-size: 24px; line-height: 1; }
+.hint-btn-label {
+  font-size: 0.72rem; font-weight: 500; color: var(--muted2);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Love — primary large */
+.hint-love {
+  width: 72px; height: 72px; background: #0A0A0A; border-color: #0A0A0A;
+  color: #FFFFFF;
+}
+.hint-love:hover { background: #222; border-color: #222; }
+.hint-love .material-symbols-rounded { font-size: 28px; }
+.hint-love + .hint-btn-label { color: var(--text); font-weight: 600; }
+
+/* Note button */
+.hint-note { color: var(--muted2); }
+.hint-hate { color: var(--muted2); }
+
+/* ── COMMENT MODAL ── */
+.comment-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+  align-items: flex-end; justify-content: center;
+}
+.comment-overlay.open { display: flex; }
+.comment-sheet {
+  width: 100%; max-width: 480px; padding: 20px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 24px 24px 0 0; padding-bottom: calc(20px + env(safe-area-inset-bottom));
+}
+.comment-sheet-title {
+  font-size: 0.78rem; font-weight: 500; color: var(--muted2); margin-bottom: 10px; text-align: center;
+}
+.comment-sheet-logo {
+  font-size: 0.95rem; font-weight: 700; text-align: center; margin-bottom: 14px;
+}
+.comment-textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border2);
+  color: var(--text); border-radius: 14px; padding: 12px 14px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; resize: none;
+  outline: none; line-height: 1.5; height: 90px;
+  transition: border-color 0.15s;
+}
+.comment-textarea:focus { border-color: #0A0A0A; }
+.comment-textarea::placeholder { color: var(--muted2); }
+.comment-btns { display: flex; gap: 10px; margin-top: 12px; }
+.comment-btn {
+  flex: 1; padding: 13px; border-radius: 100px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text); transition: background 0.15s;
+}
+.comment-btn:hover { background: var(--surface2); }
+.comment-btn.save { background: #0A0A0A; color: #FFFFFF; border-color: #0A0A0A; }
+.comment-btn.save:hover { background: #222; }
+
+/* ── RESULTS SCREEN ── */
+#screen-results { overflow-y: auto; padding-top: 24px; padding-bottom: 48px; justify-content: flex-start; align-items: stretch; }
+.result-header { width: 100%; margin-bottom: 16px; }
+.result-title {
+  font-size: 1.6rem; font-weight: 700; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.result-subtitle { color: var(--muted2); font-size: 0.82rem; margin-bottom: 16px; }
+
+/* Archetype card — dark pill */
+.taste-card {
+  background: #0A0A0A; border-radius: 24px;
+  padding: 20px; margin-bottom: 16px; width: 100%;
+}
+.taste-card-top {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.taste-card-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 1.2rem;
+}
+.taste-card-meta { display: flex; flex-direction: column; gap: 2px; }
+.taste-card-eyebrow {
+  font-size: 0.68rem; font-weight: 500; color: rgba(255,255,255,0.45);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.taste-badge {
+  font-size: 1.1rem; font-weight: 700; color: #FFFFFF;
+}
+.taste-description {
+  font-size: 0.84rem; color: rgba(255,255,255,0.65); line-height: 1.6;
+}
+
+.stats-row { display: flex; gap: 10px; width: 100%; margin-bottom: 16px; }
+.stat-box {
+  flex:1; background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 16px 14px;
+}
+.stat-val { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.stat-lbl { color: var(--muted2); font-size: 0.72rem; margin-top: 2px; }
+.stat-bar { height: 3px; background: var(--border2); border-radius: 100px; margin-top: 8px; overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 100px; background: var(--text); }
+
+/* Decision speed strip */
+.speed-strip {
+  width: 100%; background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 16px; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.speed-left { display: flex; flex-direction: column; gap: 3px; }
+.speed-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted2); font-weight: 500; }
+.speed-val { font-size: 1rem; font-weight: 700; }
+.speed-desc { font-size: 0.76rem; color: var(--muted2); }
+.speed-pip { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Style DNA */
+.dna-section { width: 100%; margin-bottom: 16px; }
+.dna-title {
+  font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--muted2); margin-bottom: 10px;
+}
+.dna-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.dna-tag { font-size: 0.76rem; color: var(--muted2); width: 88px; flex-shrink: 0; text-transform: capitalize; }
+.dna-bar-wrap { flex: 1; height: 4px; background: var(--border2); border-radius: 100px; overflow: hidden; }
+.dna-bar { height: 100%; border-radius: 100px; background: #0A0A0A; transition: width 0.6s ease; }
+.dna-count { font-size: 0.72rem; color: var(--muted2); width: 18px; text-align: right; flex-shrink: 0; }
+
+/* Result logo grids */
+.result-section { width: 100%; margin-bottom: 16px; }
+.result-section-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.result-section-title {
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--muted2);
+}
+.result-section-logic {
+  font-size: 0.65rem; font-weight: 400; letter-spacing: 0; text-transform: none;
+  color: var(--border); margin-left: 4px;
+}
+.see-all-btn {
+  display: flex; align-items: center; gap: 2px;
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem;
+  font-weight: 500; color: var(--muted2);
+}
+.see-all-btn .material-symbols-rounded { font-size: 14px; }
+.result-logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.result-logo-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 12px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+}
+.result-logo-mini {
+  width: 56px; height: 56px; border-radius: 14px;
+  overflow: hidden;
+}
+.result-logo-mini img { width: 100%; height: 100%; object-fit: fill; display: block; }
+.mini-fallback {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; font-weight: 700; color: #fff;
+}
+.result-logo-name { font-size: 0.7rem; color: var(--text); font-weight: 600; text-align: center; line-height: 1.3; }
+.result-logo-note { font-size: 0.62rem; color: var(--muted2); text-align: center; font-style: italic; line-height: 1.3; }
+
+/* Notes section */
+.notes-section { width: 100%; margin-bottom: 16px; }
+.notes-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted2); margin-bottom: 10px; }
+.note-row {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 12px 14px; margin-bottom: 8px;
+}
+.note-company { font-size: 0.8rem; font-weight: 600; margin-bottom: 3px; }
+.note-text { font-size: 0.78rem; color: var(--muted2); line-height: 1.5; }
+
+.result-actions { display: flex; gap: 10px; width: 100%; margin-top: 4px; }
+.btn {
+  flex:1; background: var(--surface); border: 1px solid var(--border2);
+  color: var(--text); padding: 14px; border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn:hover { background: var(--surface2); }
+.btn.primary { background: #0A0A0A; color: #FFFFFF; border-color: #0A0A0A; }
+.btn.primary:hover { background: #222; border-color: #222; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: #0A0A0A; color: #FFF; padding: 10px 20px;
+  border-radius: 100px; font-size: 0.82rem; font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- SCREEN: Industry -->
+<div id="screen-industry" class="screen active" style="justify-content:center; gap:20px;">
+  <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+    <div class="main-step">Logo Crush</div>
+    <div class="main-title">What's your<br>world?</div>
+    <div class="main-sub">Pick an industry. Rate 20 logos. Find out what you're drawn to.</div>
+  </div>
+  <div class="industry-grid" id="industry-grid"></div>
+</div>
+
+<!-- SCREEN: Swipe -->
+<div id="screen-swipe" class="screen">
+  <div class="top-bar">
+    <div class="top-bar-row">
+      <button class="back-btn" onclick="goBack()"><span class="material-symbols-rounded">arrow_back</span></button>
+      <div class="top-bar-center">
+        <span class="top-bar-title">Logo Crush</span>
+        <span class="top-bar-count" id="progress-label">0 of 20 rated</span>
+      </div>
+      <div class="top-bar-icon-btn"><span class="material-symbols-rounded">bar_chart</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="card-area">
+    <div class="card-stack" id="card-stack">
+      <div class="card-bg"></div>
+      <div class="card-bg"></div>
+    </div>
+    <div class="action-hints">
+      <div class="hint-btn-wrap">
+        <button class="hint-btn hint-hate" onclick="triggerHate()"><span class="material-symbols-rounded">thumb_down</span></button>
+        <span class="hint-btn-label">Skip</span>
+      </div>
+      <div class="hint-btn-wrap">
+        <button class="hint-btn hint-love" onclick="triggerLove()"><span class="material-symbols-rounded">thumb_up</span></button>
+        <span class="hint-btn-label">Love it</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN: Results -->
+<div id="screen-results" class="screen">
+  <div class="result-header">
+    <div class="result-title">Your Crush Profile</div>
+    <div class="taste-card">
+      <div class="taste-card-top">
+        <div class="taste-card-icon">✦</div>
+        <div class="taste-card-meta">
+          <span class="taste-card-eyebrow">Your crush type</span>
+          <div class="taste-badge" id="taste-badge">—</div>
+        </div>
+      </div>
+      <div class="taste-description" id="taste-description"></div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-val" id="stat-loved">—</div>
+      <div class="stat-lbl">Loved</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-loved-bar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-hated">—</div>
+      <div class="stat-lbl">Skipped</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-hated-bar" style="width:0%;background:var(--muted2)"></div></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="stat-time">—</div>
+      <div class="stat-lbl">Avg Speed</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-time-bar" style="width:50%;background:var(--muted2)"></div></div>
+    </div>
+  </div>
+
+  <div class="speed-strip" id="speed-strip">
+    <div class="speed-left">
+      <div class="speed-label">Decision Style</div>
+      <div class="speed-val" id="speed-val">—</div>
+      <div class="speed-desc" id="speed-desc">—</div>
+    </div>
+    <div class="speed-pip" id="speed-pip"></div>
+  </div>
+
+  <div class="dna-section">
+    <div class="dna-title">Style DNA — % of loved logos with each trait</div>
+    <div id="dna-bars"></div>
+  </div>
+
+  <div class="result-section section-love">
+    <div class="result-section-header">
+      <div class="result-section-title">Most representative <span class="result-section-logic">by tag overlap score</span></div>
+      <button class="see-all-btn" onclick="showAllModal('loved')">See all <span class="material-symbols-rounded">chevron_right</span></button>
+    </div>
+    <div class="result-logo-grid" id="loved-grid"></div>
+  </div>
+
+  <div class="result-section section-hate">
+    <div class="result-section-header">
+      <div class="result-section-title">Most skipped <span class="result-section-logic">by tag overlap score</span></div>
+      <button class="see-all-btn" onclick="showAllModal('hated')">See all <span class="material-symbols-rounded">chevron_right</span></button>
+    </div>
+    <div class="result-logo-grid" id="hated-grid"></div>
+  </div>
+
+  <div class="notes-section" id="notes-section" style="display:none">
+    <div class="notes-title">Your Notes</div>
+    <div id="notes-list"></div>
+  </div>
+
+  <div class="result-actions" style="flex-direction:column;gap:8px;">
+    <div style="display:flex;gap:8px;width:100%;">
+      <button class="btn" onclick="downloadMD()" style="display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span class="material-symbols-rounded" style="font-size:16px;">download</span>AI export (.md)
+      </button>
+      <button class="btn" onclick="downloadPDF()" style="display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span class="material-symbols-rounded" style="font-size:16px;">picture_as_pdf</span>PDF
+      </button>
+    </div>
+    <div style="display:flex;gap:8px;width:100%;">
+      <button class="btn" onclick="showShareCard()" style="display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span class="material-symbols-rounded" style="font-size:16px;">ios_share</span>Share card
+      </button>
+      <button class="btn primary" onclick="restart()">New Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- Comment modal -->
+<div class="comment-overlay" id="comment-overlay" onclick="closeCommentOutside(event)">
+  <div class="comment-sheet">
+    <div class="comment-sheet-title">Add a note (optional)</div>
+    <div class="comment-sheet-logo" id="comment-logo-name"></div>
+    <textarea class="comment-textarea" id="comment-input" placeholder="What do you think about this logo?"></textarea>
+    <div class="comment-btns">
+      <button class="comment-btn" onclick="closeComment()">Cancel</button>
+      <button class="comment-btn save" onclick="saveComment()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Card Modal -->
+<div class="comment-overlay" id="sharecard-overlay" onclick="closeShareCardOutside(event)">
+  <div class="comment-sheet" style="padding-bottom:32px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:700;color:var(--text)">Your crush card</span>
+      <button onclick="closeShareCard()" style="background:none;border:none;cursor:pointer;padding:4px;">
+        <span class="material-symbols-rounded" style="font-size:20px;color:var(--muted2);">close</span>
+      </button>
+    </div>
+    <canvas id="share-canvas" style="width:100%;border-radius:20px;display:block;"></canvas>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn primary" onclick="downloadCard()" style="display:flex;align-items:center;justify-content:center;gap:6px;flex:1;">
+        <span class="material-symbols-rounded" style="font-size:16px;">download</span>Save image
+      </button>
+      <button class="btn" onclick="copyCardText()" style="display:flex;align-items:center;justify-content:center;gap:6px;flex:1;">
+        <span class="material-symbols-rounded" style="font-size:16px;">content_copy</span>Copy text
+      </button>
+    </div>
+    <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.72rem;color:var(--muted2);text-align:center;margin-top:10px;">Screenshot or save to share on socials</p>
+  </div>
+</div>
+
+<!-- See All Modal -->
+<div class="comment-overlay" id="seeall-overlay" onclick="closeSeeAllOutside(event)">
+  <div class="comment-sheet" style="max-height:80vh;overflow-y:auto;padding-bottom:32px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:700;color:var(--text)" id="seeall-title">All Logos</span>
+      <button onclick="closeSeeAll()" style="background:none;border:none;cursor:pointer;padding:4px;">
+        <span class="material-symbols-rounded" style="font-size:20px;color:var(--muted2);">close</span>
+      </button>
+    </div>
+    <div class="result-logo-grid" id="seeall-grid" style="grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// CONFIG — In production, proxy logo requests server-side
+// so the API key is not exposed in client code.
+// ─────────────────────────────────────────────────────────────
+const LOGO_API_TOKEN = 'pk_RQez9FSCS8qzf83owzEwcg';
+const LOGOS_PER_SESSION = 20;
+
+// ─────────────────────────────────────────────────────────────
+// LOGO DATA — Fortune 500 companies, 20+ per industry
+// ─────────────────────────────────────────────────────────────
+const LOGOS = [
+
+  // ── TECH (42) ──
+  { name:"Apple",          industry:"tech", domain:"apple.com",         color:"#1a1a1a", tags:["minimal","monochrome","symbolic","refined"] },
+  { name:"Microsoft",      industry:"tech", domain:"microsoft.com",     color:"#0078D4", tags:["corporate","colorful","geometric","bold"] },
+  { name:"Google",         industry:"tech", domain:"google.com",        color:"#4285F4", tags:["colorful","playful","geometric","rounded"] },
+  { name:"Amazon",         industry:"tech", domain:"amazon.com",        color:"#FF9900", tags:["bold","friendly","typographic","commercial"] },
+  { name:"Meta",           industry:"tech", domain:"meta.com",          color:"#0082FB", tags:["corporate","geometric","modern","blue"] },
+  { name:"Nvidia",         industry:"tech", domain:"nvidia.com",        color:"#76B900", tags:["bold","dark","geometric","angular"] },
+  { name:"Oracle",         industry:"tech", domain:"oracle.com",        color:"#F80000", tags:["bold","red","corporate","classic"] },
+  { name:"Salesforce",     industry:"tech", domain:"salesforce.com",    color:"#00A1E0", tags:["corporate","blue","rounded","friendly"] },
+  { name:"Adobe",          industry:"tech", domain:"adobe.com",         color:"#FF0000", tags:["bold","red","geometric","iconic"] },
+  { name:"Intel",          industry:"tech", domain:"intel.com",         color:"#0071C5", tags:["corporate","blue","clean","classic"] },
+  { name:"Cisco",          industry:"tech", domain:"cisco.com",         color:"#1BA0D7", tags:["corporate","blue","technical","minimal"] },
+  { name:"IBM",            industry:"tech", domain:"ibm.com",           color:"#1F70C1", tags:["corporate","blue","bold","classic"] },
+  { name:"Broadcom",       industry:"tech", domain:"broadcom.com",      color:"#CC0000", tags:["bold","red","corporate","modern"] },
+  { name:"ServiceNow",     industry:"tech", domain:"servicenow.com",    color:"#62D84E", tags:["modern","green","corporate","clean"] },
+  { name:"SAP",            industry:"tech", domain:"sap.com",           color:"#0FAAFF", tags:["corporate","blue","modern","clean"] },
+  { name:"HP",             industry:"tech", domain:"hp.com",            color:"#0096D6", tags:["corporate","blue","bold","clean"] },
+  { name:"Dell",           industry:"tech", domain:"dell.com",          color:"#007DB8", tags:["corporate","blue","clean","bold"] },
+  { name:"Qualcomm",       industry:"tech", domain:"qualcomm.com",      color:"#3253DC", tags:["corporate","blue","modern","technical"] },
+  { name:"Texas Instruments", industry:"tech", domain:"ti.com",         color:"#C41230", tags:["bold","red","classic","corporate"] },
+  { name:"Accenture",      industry:"tech", domain:"accenture.com",     color:"#A100FF", tags:["bold","purple","modern","corporate"] },
+  { name:"Palantir",       industry:"tech", domain:"palantir.com",      color:"#1a1a1a", tags:["minimal","dark","modern","refined"] },
+  { name:"Snowflake",      industry:"tech", domain:"snowflake.com",     color:"#29B5E8", tags:["modern","blue","geometric","clean"] },
+  { name:"Shopify",        industry:"tech", domain:"shopify.com",       color:"#96BF48", tags:["modern","green","friendly","clean"] },
+  { name:"Stripe",         industry:"tech", domain:"stripe.com",        color:"#635BFF", tags:["modern","purple","minimal","refined"] },
+  { name:"Zoom",           industry:"tech", domain:"zoom.us",           color:"#2D8CFF", tags:["corporate","blue","friendly","modern"] },
+  { name:"Dropbox",        industry:"tech", domain:"dropbox.com",       color:"#0061FF", tags:["corporate","blue","clean","minimal"] },
+  { name:"GitHub",         industry:"tech", domain:"github.com",        color:"#1a1a1a", tags:["minimal","dark","technical","clean"] },
+  { name:"Atlassian",      industry:"tech", domain:"atlassian.com",     color:"#0052CC", tags:["corporate","blue","modern","bold"] },
+  { name:"HubSpot",        industry:"tech", domain:"hubspot.com",       color:"#FF7A59", tags:["bold","warm","modern","friendly"] },
+  { name:"Twilio",         industry:"tech", domain:"twilio.com",        color:"#F22F46", tags:["bold","red","modern","technical"] },
+  { name:"Cloudflare",     industry:"tech", domain:"cloudflare.com",    color:"#F6821F", tags:["bold","orange","modern","technical"] },
+  { name:"MongoDB",        industry:"tech", domain:"mongodb.com",       color:"#13AA52", tags:["modern","green","technical","clean"] },
+  { name:"Workday",        industry:"tech", domain:"workday.com",       color:"#F5B31B", tags:["bold","warm","corporate","modern"] },
+  { name:"Zendesk",        industry:"tech", domain:"zendesk.com",       color:"#03363D", tags:["dark","minimal","modern","refined"] },
+  { name:"Pinterest",      industry:"tech", domain:"pinterest.com",     color:"#E60023", tags:["bold","red","modern","friendly"] },
+  { name:"Snapchat",       industry:"tech", domain:"snapchat.com",      color:"#FFFC00", tags:["bold","colorful","playful","modern"] },
+  { name:"X (Twitter)",    industry:"tech", domain:"x.com",             color:"#1a1a1a", tags:["minimal","dark","modern","bold"] },
+  { name:"LinkedIn",       industry:"tech", domain:"linkedin.com",      color:"#0A66C2", tags:["corporate","blue","modern","clean"] },
+  { name:"PayPal",         industry:"tech", domain:"paypal.com",        color:"#003087", tags:["corporate","navy","bold","clean"] },
+  { name:"AMD",            industry:"tech", domain:"amd.com",           color:"#ED1C24", tags:["bold","red","modern","angular"] },
+  { name:"DocuSign",       industry:"tech", domain:"docusign.com",      color:"#FFB500", tags:["bold","warm","corporate","modern"] },
+  { name:"OpenAI",         industry:"tech", domain:"openai.com",        color:"#1a1a1a", tags:["minimal","dark","modern","refined"] },
+
+  // ── FINANCE (42) ──
+  { name:"JPMorgan Chase",   industry:"finance", domain:"jpmorganchase.com",  color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Bank of America",  industry:"finance", domain:"bankofamerica.com",  color:"#E31837", tags:["bold","red","corporate","classic"] },
+  { name:"Wells Fargo",      industry:"finance", domain:"wellsfargo.com",     color:"#D71E28", tags:["classic","red","bold","western"] },
+  { name:"Citigroup",        industry:"finance", domain:"citigroup.com",      color:"#056DAE", tags:["corporate","blue","clean","modern"] },
+  { name:"Goldman Sachs",    industry:"finance", domain:"goldmansachs.com",   color:"#1A1A1A", tags:["refined","dark","minimal","corporate"] },
+  { name:"Morgan Stanley",   industry:"finance", domain:"morganstanley.com",  color:"#003C71", tags:["corporate","navy","classic","refined"] },
+  { name:"Capital One",      industry:"finance", domain:"capitalone.com",     color:"#D03027", tags:["bold","red","modern","accessible"] },
+  { name:"BlackRock",        industry:"finance", domain:"blackrock.com",      color:"#1a1a1a", tags:["dark","minimal","refined","corporate"] },
+  { name:"Charles Schwab",   industry:"finance", domain:"schwab.com",         color:"#00A8E0", tags:["corporate","blue","clean","trustworthy"] },
+  { name:"American Express", industry:"finance", domain:"americanexpress.com",color:"#007BC1", tags:["premium","blue","corporate","classic"] },
+  { name:"Visa",             industry:"finance", domain:"visa.com",           color:"#1A1F71", tags:["corporate","navy","classic","bold"] },
+  { name:"Mastercard",       industry:"finance", domain:"mastercard.com",     color:"#EB001B", tags:["geometric","bold","warm","iconic"] },
+  { name:"Berkshire Hathaway",industry:"finance",domain:"berkshirehathaway.com",color:"#003087",tags:["corporate","classic","refined","bold"] },
+  { name:"Allstate",         industry:"finance", domain:"allstate.com",       color:"#0033A0", tags:["corporate","blue","bold","classic"] },
+  { name:"Prudential",       industry:"finance", domain:"prudential.com",     color:"#0B2265", tags:["corporate","navy","classic","refined"] },
+  { name:"MetLife",          industry:"finance", domain:"metlife.com",        color:"#0076CF", tags:["corporate","blue","friendly","modern"] },
+  { name:"Progressive",      industry:"finance", domain:"progressive.com",    color:"#CC0000", tags:["bold","red","modern","accessible"] },
+  { name:"Travelers",        industry:"finance", domain:"travelers.com",      color:"#CC0000", tags:["classic","red","bold","corporate"] },
+  { name:"Fidelity",         industry:"finance", domain:"fidelity.com",       color:"#008000", tags:["corporate","green","classic","trustworthy"] },
+  { name:"Nasdaq",           industry:"finance", domain:"nasdaq.com",         color:"#0066CC", tags:["corporate","blue","modern","bold"] },
+  { name:"State Street",     industry:"finance", domain:"statestreet.com",    color:"#003087", tags:["corporate","navy","refined","classic"] },
+  { name:"Moody's",          industry:"finance", domain:"moodys.com",         color:"#0D2D6D", tags:["corporate","navy","classic","refined"] },
+  { name:"Coinbase",         industry:"finance", domain:"coinbase.com",       color:"#0052FF", tags:["corporate","blue","modern","bold"] },
+  { name:"Robinhood",        industry:"finance", domain:"robinhood.com",      color:"#00C805", tags:["modern","green","bold","friendly"] },
+  { name:"Block",            industry:"finance", domain:"block.xyz",          color:"#1a1a1a", tags:["minimal","dark","modern","geometric"] },
+  { name:"Affirm",           industry:"finance", domain:"affirm.com",         color:"#4A4AF4", tags:["modern","purple","bold","clean"] },
+  { name:"SoFi",             industry:"finance", domain:"sofi.com",           color:"#2AD000", tags:["modern","green","bold","friendly"] },
+  { name:"Discover",         industry:"finance", domain:"discover.com",       color:"#FF6600", tags:["bold","orange","modern","friendly"] },
+  { name:"Ally Financial",   industry:"finance", domain:"ally.com",           color:"#8400FF", tags:["bold","purple","modern","accessible"] },
+  { name:"USAA",             industry:"finance", domain:"usaa.com",           color:"#003087", tags:["corporate","navy","trustworthy","classic"] },
+  { name:"Vanguard",         industry:"finance", domain:"vanguard.com",       color:"#CC0000", tags:["bold","red","classic","trustworthy"] },
+  { name:"Raymond James",    industry:"finance", domain:"raymondjames.com",   color:"#003087", tags:["corporate","navy","classic","refined"] },
+  { name:"Truist",           industry:"finance", domain:"truist.com",         color:"#571F7E", tags:["bold","purple","modern","corporate"] },
+  { name:"Regions Financial",industry:"finance", domain:"regions.com",        color:"#006EB6", tags:["corporate","blue","clean","trustworthy"] },
+  { name:"Fifth Third Bank", industry:"finance", domain:"53.com",             color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Synchrony",        industry:"finance", domain:"synchrony.com",      color:"#6CC04A", tags:["modern","green","friendly","clean"] },
+  { name:"Hartford Financial",industry:"finance",domain:"thehartford.com",    color:"#CC0000", tags:["bold","red","classic","corporate"] },
+  { name:"Lincoln National", industry:"finance", domain:"lfg.com",            color:"#0F4C81", tags:["corporate","navy","classic","refined"] },
+  { name:"Unum",             industry:"finance", domain:"unum.com",           color:"#E31837", tags:["bold","red","corporate","modern"] },
+  { name:"S&P Global",       industry:"finance", domain:"spglobal.com",       color:"#003087", tags:["corporate","navy","refined","classic"] },
+  { name:"CME Group",        industry:"finance", domain:"cmegroup.com",       color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Intercontinental Exchange",industry:"finance",domain:"ice.com",     color:"#003087", tags:["corporate","navy","technical","bold"] },
+
+  // ── HEALTH (42) ──
+  { name:"UnitedHealth",     industry:"health", domain:"unitedhealthgroup.com",color:"#196ECF",tags:["corporate","blue","bold","modern"] },
+  { name:"CVS Health",       industry:"health", domain:"cvshealth.com",        color:"#CC0000",tags:["bold","red","commercial","classic"] },
+  { name:"Johnson & Johnson",industry:"health", domain:"jnj.com",              color:"#D62828",tags:["classic","red","rounded","trustworthy"] },
+  { name:"Pfizer",           industry:"health", domain:"pfizer.com",           color:"#0093D0",tags:["clinical","blue","corporate","clean"] },
+  { name:"Cigna",            industry:"health", domain:"thecignagroup.com",    color:"#006699",tags:["corporate","blue","modern","clean"] },
+  { name:"Merck",            industry:"health", domain:"merck.com",            color:"#003594",tags:["corporate","blue","bold","classic"] },
+  { name:"AbbVie",           industry:"health", domain:"abbvie.com",           color:"#071D49",tags:["dark","corporate","minimal","refined"] },
+  { name:"Eli Lilly",        industry:"health", domain:"lilly.com",            color:"#D8212D",tags:["bold","red","classic","corporate"] },
+  { name:"Abbott",           industry:"health", domain:"abbott.com",           color:"#007DC3",tags:["corporate","blue","bold","modern"] },
+  { name:"Humana",           industry:"health", domain:"humana.com",           color:"#4DB848",tags:["green","fresh","friendly","modern"] },
+  { name:"Elevance Health",  industry:"health", domain:"elevancehealth.com",   color:"#003087",tags:["corporate","blue","modern","clean"] },
+  { name:"Thermo Fisher",    industry:"health", domain:"thermofisher.com",     color:"#0070C0",tags:["corporate","blue","technical","clean"] },
+  { name:"McKesson",         industry:"health", domain:"mckesson.com",         color:"#E31837",tags:["bold","red","corporate","classic"] },
+  { name:"Medtronic",        industry:"health", domain:"medtronic.com",        color:"#0079C1",tags:["corporate","blue","technical","modern"] },
+  { name:"Boston Scientific",industry:"health", domain:"bostonscientific.com", color:"#006BB6",tags:["corporate","blue","technical","clean"] },
+  { name:"Stryker",          industry:"health", domain:"stryker.com",          color:"#F5A200",tags:["bold","warm","modern","corporate"] },
+  { name:"DaVita",           industry:"health", domain:"davita.com",           color:"#D40029",tags:["bold","red","modern","friendly"] },
+  { name:"Cardinal Health",  industry:"health", domain:"cardinalhealth.com",   color:"#CC0000",tags:["bold","red","corporate","classic"] },
+  { name:"Baxter",           industry:"health", domain:"baxter.com",           color:"#00A0DF",tags:["corporate","blue","clean","modern"] },
+  { name:"HCA Healthcare",   industry:"health", domain:"hcahealthcare.com",    color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Regeneron",        industry:"health", domain:"regeneron.com",        color:"#F26A21",tags:["bold","warm","modern","clean"] },
+  { name:"Gilead Sciences",  industry:"health", domain:"gilead.com",           color:"#CC0000",tags:["bold","red","corporate","modern"] },
+  { name:"Moderna",          industry:"health", domain:"modernatx.com",        color:"#003087",tags:["corporate","navy","modern","clean"] },
+  { name:"AstraZeneca",      industry:"health", domain:"astrazeneca.com",      color:"#002A3A",tags:["dark","refined","corporate","clean"] },
+  { name:"Novartis",         industry:"health", domain:"novartis.com",         color:"#E74011",tags:["bold","warm","modern","corporate"] },
+  { name:"Roche",            industry:"health", domain:"roche.com",            color:"#003087",tags:["corporate","navy","classic","refined"] },
+  { name:"Sanofi",           industry:"health", domain:"sanofi.com",           color:"#7B2C9F",tags:["bold","purple","modern","corporate"] },
+  { name:"Walgreens",        industry:"health", domain:"walgreens.com",        color:"#E31837",tags:["bold","red","commercial","classic"] },
+  { name:"Danaher",          industry:"health", domain:"danaher.com",          color:"#0071B9",tags:["corporate","blue","technical","clean"] },
+  { name:"Zimmer Biomet",    industry:"health", domain:"zimmerbiomet.com",     color:"#003087",tags:["corporate","navy","technical","clean"] },
+  { name:"Edwards Lifesciences",industry:"health",domain:"edwards.com",        color:"#003087",tags:["corporate","navy","refined","clean"] },
+  { name:"IQVIA",            industry:"health", domain:"iqvia.com",            color:"#E31837",tags:["bold","red","technical","modern"] },
+  { name:"Hologic",          industry:"health", domain:"hologic.com",          color:"#E31837",tags:["bold","red","modern","corporate"] },
+  { name:"Quest Diagnostics",industry:"health", domain:"questdiagnostics.com", color:"#CC0000",tags:["bold","red","corporate","trustworthy"] },
+  { name:"LabCorp",          industry:"health", domain:"labcorp.com",          color:"#003087",tags:["corporate","navy","clean","trustworthy"] },
+  { name:"Optum",            industry:"health", domain:"optum.com",            color:"#FF612B",tags:["bold","orange","modern","friendly"] },
+  { name:"Centene",          industry:"health", domain:"centene.com",          color:"#007DC3",tags:["corporate","blue","modern","clean"] },
+  { name:"WellCare",         industry:"health", domain:"wellcare.com",         color:"#00A3AD",tags:["modern","blue","friendly","clean"] },
+  { name:"Align Technology", industry:"health", domain:"aligntech.com",        color:"#1a1a1a",tags:["minimal","dark","modern","refined"] },
+  { name:"Intuitive Surgical",industry:"health",domain:"intuitive.com",        color:"#003087",tags:["corporate","navy","technical","refined"] },
+  { name:"Becton Dickinson", industry:"health", domain:"bd.com",               color:"#0066CC",tags:["corporate","blue","technical","clean"] },
+  { name:"Viatris",          industry:"health", domain:"viatris.com",          color:"#E31837",tags:["bold","red","modern","corporate"] },
+
+  // ── RETAIL (42) ──
+  { name:"Walmart",       industry:"retail", domain:"walmart.com",      color:"#0071CE",tags:["bold","blue","accessible","commercial"] },
+  { name:"Amazon",        industry:"retail", domain:"amazon.com",       color:"#FF9900",tags:["bold","friendly","typographic","commercial"] },
+  { name:"Costco",        industry:"retail", domain:"costco.com",       color:"#005DAA",tags:["corporate","blue","bold","classic"] },
+  { name:"Target",        industry:"retail", domain:"target.com",       color:"#CC0000",tags:["bold","red","geometric","iconic"] },
+  { name:"Home Depot",    industry:"retail", domain:"homedepot.com",    color:"#F96302",tags:["bold","orange","commercial","accessible"] },
+  { name:"Nike",          industry:"retail", domain:"nike.com",         color:"#1a1a1a",tags:["minimal","dark","iconic","symbolic"] },
+  { name:"Starbucks",     industry:"retail", domain:"starbucks.com",    color:"#00704A",tags:["green","circular","friendly","organic"] },
+  { name:"Best Buy",      industry:"retail", domain:"bestbuy.com",      color:"#003087",tags:["bold","blue","corporate","commercial"] },
+  { name:"Lowe's",        industry:"retail", domain:"lowes.com",        color:"#004990",tags:["corporate","blue","bold","classic"] },
+  { name:"TJX",           industry:"retail", domain:"tjx.com",          color:"#CC0000",tags:["bold","red","classic","commercial"] },
+  { name:"Dollar General",industry:"retail", domain:"dollargeneral.com",color:"#FFD100",tags:["bold","yellow","commercial","accessible"] },
+  { name:"Kroger",        industry:"retail", domain:"thekrogerco.com",  color:"#003B7A",tags:["corporate","blue","classic","bold"] },
+  { name:"Macy's",        industry:"retail", domain:"macys.com",        color:"#CC0000",tags:["classic","red","elegant","bold"] },
+  { name:"Gap",           industry:"retail", domain:"gap.com",          color:"#1a1a1a",tags:["minimal","dark","typographic","clean"] },
+  { name:"Dollar Tree",   industry:"retail", domain:"dollartree.com",   color:"#009E60",tags:["green","friendly","commercial","accessible"] },
+  { name:"AutoZone",      industry:"retail", domain:"autozone.com",     color:"#F60000",tags:["bold","red","commercial","classic"] },
+  { name:"O'Reilly Auto", industry:"retail", domain:"oreillyauto.com",  color:"#CC0000",tags:["bold","red","commercial","classic"] },
+  { name:"Ross Stores",   industry:"retail", domain:"rossstores.com",   color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Genuine Parts", industry:"retail", domain:"genpt.com",        color:"#0052A5",tags:["corporate","blue","classic","bold"] },
+  { name:"Nordstrom",     industry:"retail", domain:"nordstrom.com",    color:"#1a1a1a",tags:["minimal","dark","refined","premium"] },
+  { name:"Under Armour",  industry:"retail", domain:"underarmour.com",  color:"#1a1a1a",tags:["bold","dark","angular","modern"] },
+  { name:"Adidas",        industry:"retail", domain:"adidas.com",       color:"#1a1a1a",tags:["minimal","dark","geometric","iconic"] },
+  { name:"IKEA",          industry:"retail", domain:"ikea.com",         color:"#0058A3",tags:["bold","blue","accessible","friendly"] },
+  { name:"Zara",          industry:"retail", domain:"zara.com",         color:"#1a1a1a",tags:["minimal","dark","refined","typographic"] },
+  { name:"H&M",           industry:"retail", domain:"hm.com",           color:"#E50010",tags:["bold","red","accessible","commercial"] },
+  { name:"Sephora",       industry:"retail", domain:"sephora.com",      color:"#1a1a1a",tags:["minimal","dark","premium","bold"] },
+  { name:"Lululemon",     industry:"retail", domain:"lululemon.com",    color:"#E31837",tags:["bold","red","premium","modern"] },
+  { name:"Ulta Beauty",   industry:"retail", domain:"ulta.com",         color:"#E24397",tags:["colorful","bold","modern","friendly"] },
+  { name:"Victoria's Secret",industry:"retail",domain:"victoriassecret.com",color:"#E31837",tags:["bold","red","elegant","premium"] },
+  { name:"Bath & Body Works",industry:"retail",domain:"bathandbodyworks.com",color:"#003087",tags:["friendly","colorful","warm","playful"] },
+  { name:"Dick's Sporting",industry:"retail", domain:"dickssportinggoods.com",color:"#003087",tags:["corporate","blue","bold","commercial"] },
+  { name:"Foot Locker",   industry:"retail", domain:"footlocker.com",   color:"#1a1a1a",tags:["bold","dark","angular","commercial"] },
+  { name:"Wayfair",       industry:"retail", domain:"wayfair.com",      color:"#7B2CCA",tags:["bold","purple","modern","friendly"] },
+  { name:"Chewy",         industry:"retail", domain:"chewy.com",        color:"#003087",tags:["corporate","blue","friendly","commercial"] },
+  { name:"PetSmart",      industry:"retail", domain:"petsmart.com",     color:"#003087",tags:["corporate","blue","friendly","bold"] },
+  { name:"Whole Foods",   industry:"retail", domain:"wholefoodsmarket.com",color:"#006B3C",tags:["green","organic","friendly","premium"] },
+  { name:"Trader Joe's",  industry:"retail", domain:"traderjoes.com",   color:"#CC0000",tags:["warm","friendly","bold","organic"] },
+  { name:"Ralph Lauren",  industry:"retail", domain:"ralphlauren.com",  color:"#1a1a1a",tags:["refined","dark","premium","classic"] },
+  { name:"Coach",         industry:"retail", domain:"coach.com",        color:"#1a1a1a",tags:["minimal","dark","premium","refined"] },
+  { name:"Tiffany & Co",  industry:"retail", domain:"tiffany.com",      color:"#0ABAB5",tags:["premium","elegant","colorful","iconic"] },
+  { name:"Puma",          industry:"retail", domain:"puma.com",         color:"#1a1a1a",tags:["minimal","dark","symbolic","bold"] },
+  { name:"New Balance",   industry:"retail", domain:"newbalance.com",   color:"#CF0A2C",tags:["bold","red","classic","commercial"] },
+
+  // ── ENERGY (42) ──
+  { name:"ExxonMobil",      industry:"energy", domain:"exxonmobil.com",     color:"#D01F2E",tags:["bold","red","classic","corporate"] },
+  { name:"Chevron",         industry:"energy", domain:"chevron.com",        color:"#0054A4",tags:["corporate","blue","classic","bold"] },
+  { name:"ConocoPhillips",  industry:"energy", domain:"conocophillips.com", color:"#CC0000",tags:["bold","red","corporate","classic"] },
+  { name:"Phillips 66",     industry:"energy", domain:"phillips66.com",     color:"#D62828",tags:["bold","red","corporate","classic"] },
+  { name:"Valero Energy",   industry:"energy", domain:"valero.com",         color:"#003087",tags:["corporate","blue","bold","clean"] },
+  { name:"Marathon Petroleum",industry:"energy",domain:"marathonpetroleum.com",color:"#D62828",tags:["bold","red","corporate","classic"] },
+  { name:"Duke Energy",     industry:"energy", domain:"duke-energy.com",    color:"#00AEEF",tags:["corporate","blue","modern","clean"] },
+  { name:"Dominion Energy", industry:"energy", domain:"dominionenergy.com", color:"#003087",tags:["corporate","blue","bold","classic"] },
+  { name:"Southern Company",industry:"energy", domain:"southerncompany.com",color:"#004B8D",tags:["corporate","blue","classic","bold"] },
+  { name:"Exelon",          industry:"energy", domain:"exeloncorp.com",     color:"#0099D8",tags:["corporate","blue","modern","clean"] },
+  { name:"NextEra Energy",  industry:"energy", domain:"nexteraenergy.com",  color:"#003087",tags:["corporate","blue","clean","modern"] },
+  { name:"Sempra",          industry:"energy", domain:"sempra.com",         color:"#E31837",tags:["bold","red","corporate","modern"] },
+  { name:"Entergy",         industry:"energy", domain:"entergy.com",        color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"NRG Energy",      industry:"energy", domain:"nrg.com",            color:"#EF2C2C",tags:["bold","red","modern","corporate"] },
+  { name:"Williams Companies",industry:"energy",domain:"williams.com",      color:"#003087",tags:["corporate","blue","bold","classic"] },
+  { name:"Kinder Morgan",   industry:"energy", domain:"kindermorgan.com",   color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Halliburton",     industry:"energy", domain:"halliburton.com",    color:"#CC0000",tags:["bold","red","corporate","classic"] },
+  { name:"Schlumberger",    industry:"energy", domain:"slb.com",            color:"#0072CE",tags:["corporate","blue","modern","technical"] },
+  { name:"Baker Hughes",    industry:"energy", domain:"bakerhughes.com",    color:"#E31837",tags:["bold","red","corporate","modern"] },
+  { name:"EOG Resources",   industry:"energy", domain:"eogesources.com",    color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Pioneer Natural", industry:"energy", domain:"pxd.com",            color:"#007DC3",tags:["corporate","blue","bold","modern"] },
+  { name:"AES Corporation", industry:"energy", domain:"aes.com",            color:"#009B77",tags:["green","modern","corporate","clean"] },
+  { name:"Shell",           industry:"energy", domain:"shell.com",          color:"#FBCE07",tags:["bold","colorful","iconic","classic"] },
+  { name:"BP",              industry:"energy", domain:"bp.com",             color:"#009900",tags:["green","modern","bold","corporate"] },
+  { name:"TotalEnergies",   industry:"energy", domain:"totalenergies.com",  color:"#CC0000",tags:["bold","red","modern","corporate"] },
+  { name:"Equinor",         industry:"energy", domain:"equinor.com",        color:"#CC0000",tags:["bold","red","modern","corporate"] },
+  { name:"Occidental",      industry:"energy", domain:"oxy.com",            color:"#CC0000",tags:["bold","red","corporate","classic"] },
+  { name:"Devon Energy",    industry:"energy", domain:"devonenergy.com",    color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Eversource",      industry:"energy", domain:"eversource.com",     color:"#003087",tags:["corporate","blue","clean","modern"] },
+  { name:"Ameren",          industry:"energy", domain:"ameren.com",         color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Xcel Energy",     industry:"energy", domain:"xcelenergy.com",     color:"#003087",tags:["corporate","blue","clean","modern"] },
+  { name:"DTE Energy",      industry:"energy", domain:"dteenergy.com",      color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"WEC Energy",      industry:"energy", domain:"wecenergygroup.com", color:"#003087",tags:["corporate","blue","clean","modern"] },
+  { name:"Consolidated Edison",industry:"energy",domain:"coned.com",        color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"First Energy",    industry:"energy", domain:"firstenergycorp.com",color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"American Electric",industry:"energy",domain:"aep.com",            color:"#003087",tags:["corporate","blue","bold","classic"] },
+  { name:"Targa Resources", industry:"energy", domain:"targaresources.com", color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Coterra Energy",  industry:"energy", domain:"coterra.com",        color:"#003087",tags:["corporate","blue","modern","clean"] },
+  { name:"Diamondback Energy",industry:"energy",domain:"diamondbackenergy.com",color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Vestas",          industry:"energy", domain:"vestas.com",         color:"#003087",tags:["corporate","blue","modern","clean"] },
+  { name:"Orsted",          industry:"energy", domain:"orsted.com",         color:"#E31837",tags:["bold","red","modern","clean"] },
+  { name:"Enphase Energy",  industry:"energy", domain:"enphase.com",        color:"#F15A22",tags:["bold","orange","modern","technical"] },
+
+  // ── AUTO & TRANSPORT (42) ──
+  { name:"Ford",           industry:"auto", domain:"ford.com",          color:"#003876",tags:["classic","oval","bold","navy"] },
+  { name:"GM",             industry:"auto", domain:"gm.com",            color:"#0170CE",tags:["corporate","blue","geometric","modern"] },
+  { name:"Tesla",          industry:"auto", domain:"tesla.com",         color:"#CC0000",tags:["minimal","dark","modern","bold"] },
+  { name:"UPS",            industry:"auto", domain:"ups.com",           color:"#351C15",tags:["bold","dark","classic","premium"] },
+  { name:"FedEx",          industry:"auto", domain:"fedex.com",         color:"#4D148C",tags:["bold","purple","iconic","modern"] },
+  { name:"Delta",          industry:"auto", domain:"delta.com",         color:"#003366",tags:["corporate","navy","clean","bold"] },
+  { name:"United Airlines",industry:"auto", domain:"united.com",        color:"#005DAA",tags:["corporate","blue","bold","classic"] },
+  { name:"Southwest",      industry:"auto", domain:"southwest.com",     color:"#304CB2",tags:["corporate","blue","bold","friendly"] },
+  { name:"Uber",           industry:"auto", domain:"uber.com",          color:"#1a1a1a",tags:["minimal","dark","modern","clean"] },
+  { name:"American Airlines",industry:"auto",domain:"aa.com",           color:"#0078D2",tags:["corporate","blue","modern","bold"] },
+  { name:"Alaska Airlines",industry:"auto", domain:"alaskaair.com",     color:"#0060A9",tags:["corporate","blue","friendly","modern"] },
+  { name:"Lyft",           industry:"auto", domain:"lyft.com",          color:"#E31937",tags:["bold","pink","modern","friendly"] },
+  { name:"Hertz",          industry:"auto", domain:"hertz.com",         color:"#F5B800",tags:["bold","yellow","classic","commercial"] },
+  { name:"Ryder",          industry:"auto", domain:"ryder.com",         color:"#CC0000",tags:["bold","red","commercial","classic"] },
+  { name:"PACCAR",         industry:"auto", domain:"paccar.com",        color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Cummins",        industry:"auto", domain:"cummins.com",       color:"#E31837",tags:["bold","red","corporate","modern"] },
+  { name:"Caterpillar",    industry:"auto", domain:"caterpillar.com",   color:"#FFCD11",tags:["bold","yellow","commercial","iconic"] },
+  { name:"Boeing",         industry:"auto", domain:"boeing.com",        color:"#1F2F7B",tags:["corporate","navy","bold","classic"] },
+  { name:"Lockheed Martin",industry:"auto", domain:"lockheedmartin.com",color:"#003087",tags:["corporate","navy","refined","bold"] },
+  { name:"Raytheon",       industry:"auto", domain:"rtx.com",           color:"#003087",tags:["corporate","navy","technical","bold"] },
+  { name:"Norfolk Southern",industry:"auto",domain:"nscorp.com",        color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"CSX",            industry:"auto", domain:"csx.com",           color:"#00A0DF",tags:["corporate","blue","modern","clean"] },
+  { name:"Toyota",         industry:"auto", domain:"toyota.com",        color:"#EB0A1E",tags:["bold","red","iconic","oval"] },
+  { name:"Honda",          industry:"auto", domain:"honda.com",         color:"#CC0000",tags:["bold","red","classic","geometric"] },
+  { name:"BMW",            industry:"auto", domain:"bmw.com",           color:"#1C69D4",tags:["corporate","blue","circular","premium"] },
+  { name:"Mercedes-Benz",  industry:"auto", domain:"mercedes-benz.com", color:"#1a1a1a",tags:["minimal","dark","symbolic","premium"] },
+  { name:"Volkswagen",     industry:"auto", domain:"vw.com",            color:"#003087",tags:["corporate","navy","geometric","classic"] },
+  { name:"Hyundai",        industry:"auto", domain:"hyundai.com",       color:"#002C5F",tags:["corporate","navy","modern","bold"] },
+  { name:"Kia",            industry:"auto", domain:"kia.com",           color:"#1a1a1a",tags:["minimal","dark","bold","typographic"] },
+  { name:"Rivian",         industry:"auto", domain:"rivian.com",        color:"#2F7C57",tags:["modern","green","minimal","clean"] },
+  { name:"Lucid Motors",   industry:"auto", domain:"lucidmotors.com",   color:"#1a1a1a",tags:["minimal","dark","modern","refined"] },
+  { name:"Stellantis",     industry:"auto", domain:"stellantis.com",    color:"#003087",tags:["corporate","navy","bold","modern"] },
+  { name:"Subaru",         industry:"auto", domain:"subaru.com",        color:"#004987",tags:["corporate","blue","bold","classic"] },
+  { name:"DHL",            industry:"auto", domain:"dhl.com",           color:"#FFCC00",tags:["bold","colorful","commercial","iconic"] },
+  { name:"USPS",           industry:"auto", domain:"usps.com",          color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Maersk",         industry:"auto", domain:"maersk.com",        color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"JB Hunt",        industry:"auto", domain:"jbhunt.com",        color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Old Dominion",   industry:"auto", domain:"odfl.com",          color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Werner Enterprises",industry:"auto",domain:"werner.com",      color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Avis",           industry:"auto", domain:"avis.com",          color:"#CC0000",tags:["bold","red","classic","commercial"] },
+  { name:"Enterprise",     industry:"auto", domain:"enterprise.com",    color:"#007A33",tags:["green","friendly","commercial","classic"] },
+  { name:"Penske",         industry:"auto", domain:"pensketruckleasing.com",color:"#003087",tags:["corporate","navy","bold","commercial"] },
+
+  // ── FOOD & BEVERAGE (42) ──
+  { name:"PepsiCo",        industry:"food", domain:"pepsico.com",           color:"#004B93",tags:["colorful","bold","circular","classic"] },
+  { name:"Coca-Cola",      industry:"food", domain:"coca-colacompany.com",  color:"#F40009",tags:["red","classic","bold","iconic"] },
+  { name:"McDonald's",     industry:"food", domain:"mcdonalds.com",         color:"#DA291C",tags:["bold","colorful","playful","iconic"] },
+  { name:"Tyson Foods",    industry:"food", domain:"tysonfoods.com",        color:"#CC0000",tags:["bold","red","commercial","classic"] },
+  { name:"Kraft Heinz",    industry:"food", domain:"kraftheinzcompany.com", color:"#CC0000",tags:["classic","red","bold","corporate"] },
+  { name:"Mondelez",       industry:"food", domain:"mondelezinternational.com",color:"#9B1993",tags:["purple","bold","modern","corporate"] },
+  { name:"Archer-Daniels", industry:"food", domain:"adm.com",              color:"#0053A0",tags:["corporate","blue","classic","bold"] },
+  { name:"Hershey",        industry:"food", domain:"thehersheycompany.com", color:"#6B3A2A",tags:["warm","classic","bold","friendly"] },
+  { name:"Conagra",        industry:"food", domain:"conagrabrands.com",     color:"#E31837",tags:["bold","red","corporate","classic"] },
+  { name:"Kellogg's",      industry:"food", domain:"kelloggs.com",          color:"#CC0000",tags:["classic","red","bold","friendly"] },
+  { name:"General Mills",  industry:"food", domain:"generalmills.com",      color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Sysco",          industry:"food", domain:"sysco.com",             color:"#0052A5",tags:["corporate","blue","commercial","bold"] },
+  { name:"Hormel Foods",   industry:"food", domain:"hormelfoods.com",       color:"#CC0000",tags:["bold","red","classic","commercial"] },
+  { name:"Campbell's",     industry:"food", domain:"campbellsoupcompany.com",color:"#CC0000",tags:["classic","red","warm","iconic"] },
+  { name:"Dole",           industry:"food", domain:"dole.com",              color:"#0072CE",tags:["corporate","blue","fresh","friendly"] },
+  { name:"Lamb Weston",    industry:"food", domain:"lambweston.com",        color:"#CC0000",tags:["bold","red","modern","corporate"] },
+  { name:"Flowers Foods",  industry:"food", domain:"flowersfoods.com",      color:"#003087",tags:["corporate","blue","friendly","warm"] },
+  { name:"Pilgrim's Pride",industry:"food", domain:"pilgrims.com",          color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Treehouse Foods",industry:"food", domain:"treehousefoods.com",    color:"#4CAF50",tags:["green","friendly","organic","modern"] },
+  { name:"Post Holdings",  industry:"food", domain:"postholdings.com",      color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Bunge",          industry:"food", domain:"bunge.com",             color:"#CC0000",tags:["bold","red","corporate","modern"] },
+  { name:"Darling Ingredients",industry:"food",domain:"darlingii.com",      color:"#E31837",tags:["bold","red","modern","corporate"] },
+  { name:"Nestlé",         industry:"food", domain:"nestle.com",            color:"#003087",tags:["corporate","navy","classic","friendly"] },
+  { name:"Chipotle",       industry:"food", domain:"chipotle.com",          color:"#A81612",tags:["bold","dark","warm","modern"] },
+  { name:"Yum Brands",     industry:"food", domain:"yum.com",               color:"#CC0000",tags:["bold","red","corporate","commercial"] },
+  { name:"Restaurant Brands",industry:"food",domain:"rbi.com",              color:"#CC0000",tags:["bold","red","commercial","modern"] },
+  { name:"Wendy's",        industry:"food", domain:"wendys.com",            color:"#E2203D",tags:["bold","red","friendly","classic"] },
+  { name:"Domino's",       industry:"food", domain:"dominos.com",           color:"#0066CC",tags:["bold","blue","commercial","classic"] },
+  { name:"Panera Bread",   industry:"food", domain:"panerabread.com",       color:"#CC0000",tags:["warm","bold","friendly","organic"] },
+  { name:"Chick-fil-A",    industry:"food", domain:"chick-fil-a.com",       color:"#E51636",tags:["bold","red","friendly","classic"] },
+  { name:"Shake Shack",    industry:"food", domain:"shakeshack.com",        color:"#3D7A00",tags:["green","modern","minimal","friendly"] },
+  { name:"Krispy Kreme",   industry:"food", domain:"krispykreme.com",       color:"#00A651",tags:["green","bold","friendly","playful"] },
+  { name:"Darden",         industry:"food", domain:"dardanrestaurants.com", color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Jack in the Box",industry:"food", domain:"jackinthebox.com",      color:"#CC0000",tags:["bold","red","playful","commercial"] },
+  { name:"Five Guys",      industry:"food", domain:"fiveguys.com",          color:"#CC0000",tags:["bold","red","friendly","commercial"] },
+  { name:"Whataburger",    industry:"food", domain:"whataburger.com",       color:"#F5821F",tags:["bold","orange","friendly","classic"] },
+  { name:"Subway",         industry:"food", domain:"subway.com",            color:"#009639",tags:["green","friendly","bold","commercial"] },
+  { name:"Dunkin'",        industry:"food", domain:"dunkindonuts.com",      color:"#FF671F",tags:["bold","orange","friendly","playful"] },
+  { name:"Noodles & Co",   industry:"food", domain:"noodles.com",           color:"#CC0000",tags:["bold","red","friendly","modern"] },
+  { name:"Panda Express",  industry:"food", domain:"pandaexpress.com",      color:"#CC0000",tags:["bold","red","commercial","friendly"] },
+  { name:"Unilever",       industry:"food", domain:"unilever.com",          color:"#1F36C7",tags:["corporate","blue","modern","symbolic"] },
+  { name:"Danone",         industry:"food", domain:"danone.com",            color:"#0066CC",tags:["corporate","blue","friendly","modern"] },
+
+  // ── CREATIVE & MEDIA (38) ──
+  { name:"Adobe",         industry:"creative", domain:"adobe.com",         color:"#FF0000", tags:["bold","red","geometric","iconic"] },
+  { name:"Figma",         industry:"creative", domain:"figma.com",         color:"#A259FF", tags:["modern","colorful","geometric","minimal"] },
+  { name:"Canva",         industry:"creative", domain:"canva.com",         color:"#00C4CC", tags:["colorful","playful","modern","friendly"] },
+  { name:"Spotify",       industry:"creative", domain:"spotify.com",       color:"#1DB954", tags:["bold","green","modern","minimal"] },
+  { name:"Netflix",       industry:"creative", domain:"netflix.com",       color:"#E50914", tags:["bold","red","minimal","iconic"] },
+  { name:"Disney",        industry:"creative", domain:"disney.com",        color:"#113CCF", tags:["classic","blue","friendly","playful"] },
+  { name:"YouTube",       industry:"creative", domain:"youtube.com",       color:"#FF0000", tags:["bold","red","modern","iconic"] },
+  { name:"Pixar",         industry:"creative", domain:"pixar.com",         color:"#1a1a1a", tags:["playful","colorful","friendly","bold"] },
+  { name:"DreamWorks",    industry:"creative", domain:"dreamworks.com",    color:"#003087", tags:["classic","blue","bold","corporate"] },
+  { name:"Shutterstock",  industry:"creative", domain:"shutterstock.com",  color:"#EE2224", tags:["bold","red","modern","corporate"] },
+  { name:"Getty Images",  industry:"creative", domain:"gettyimages.com",   color:"#1a1a1a", tags:["minimal","dark","modern","corporate"] },
+  { name:"Squarespace",   industry:"creative", domain:"squarespace.com",   color:"#1a1a1a", tags:["minimal","dark","refined","modern"] },
+  { name:"Wix",           industry:"creative", domain:"wix.com",           color:"#FAAD02", tags:["colorful","bold","playful","modern"] },
+  { name:"Behance",       industry:"creative", domain:"behance.net",       color:"#0057FF", tags:["corporate","blue","modern","clean"] },
+  { name:"Dribbble",      industry:"creative", domain:"dribbble.com",      color:"#EA4C89", tags:["colorful","playful","modern","friendly"] },
+  { name:"SoundCloud",    industry:"creative", domain:"soundcloud.com",    color:"#FF5500", tags:["bold","orange","modern","playful"] },
+  { name:"Vimeo",         industry:"creative", domain:"vimeo.com",         color:"#1AB7EA", tags:["modern","blue","clean","minimal"] },
+  { name:"Twitch",        industry:"creative", domain:"twitch.tv",         color:"#9147FF", tags:["bold","purple","modern","playful"] },
+  { name:"Slack",         industry:"creative", domain:"slack.com",         color:"#4A154B", tags:["colorful","modern","bold","geometric"] },
+  { name:"Notion",        industry:"creative", domain:"notion.so",         color:"#1a1a1a", tags:["minimal","dark","modern","clean"] },
+  { name:"Miro",          industry:"creative", domain:"miro.com",          color:"#FFD02F", tags:["colorful","bold","playful","modern"] },
+  { name:"Webflow",       industry:"creative", domain:"webflow.com",       color:"#146EF5", tags:["corporate","blue","modern","clean"] },
+  { name:"Framer",        industry:"creative", domain:"framer.com",        color:"#0099FF", tags:["modern","blue","minimal","clean"] },
+  { name:"Linear",        industry:"creative", domain:"linear.app",        color:"#5E6AD2", tags:["modern","purple","minimal","refined"] },
+  { name:"Loom",          industry:"creative", domain:"loom.com",          color:"#625DF5", tags:["modern","purple","bold","friendly"] },
+  { name:"Substack",      industry:"creative", domain:"substack.com",      color:"#FF6719", tags:["bold","orange","modern","friendly"] },
+  { name:"Medium",        industry:"creative", domain:"medium.com",        color:"#1a1a1a", tags:["minimal","dark","typographic","clean"] },
+  { name:"Patreon",       industry:"creative", domain:"patreon.com",       color:"#FF424D", tags:["bold","colorful","modern","friendly"] },
+  { name:"Mailchimp",     industry:"creative", domain:"mailchimp.com",     color:"#FFE01B", tags:["colorful","playful","bold","friendly"] },
+  { name:"Typeform",      industry:"creative", domain:"typeform.com",      color:"#1a1a1a", tags:["minimal","dark","modern","refined"] },
+  { name:"Pitch",         industry:"creative", domain:"pitch.com",         color:"#1a1a1a", tags:["minimal","dark","modern","refined"] },
+  { name:"Descript",      industry:"creative", domain:"descript.com",      color:"#1a1a1a", tags:["minimal","dark","modern","clean"] },
+  { name:"InVision",      industry:"creative", domain:"invisionapp.com",   color:"#FF3366", tags:["bold","pink","modern","friendly"] },
+  { name:"Zeplin",        industry:"creative", domain:"zeplin.io",         color:"#FDBD39", tags:["bold","warm","modern","clean"] },
+  { name:"Airtable",      industry:"creative", domain:"airtable.com",      color:"#FCB400", tags:["colorful","bold","modern","friendly"] },
+  { name:"Coda",          industry:"creative", domain:"coda.io",           color:"#CC4400", tags:["bold","warm","modern","clean"] },
+  { name:"Webex",         industry:"creative", domain:"webex.com",         color:"#003087", tags:["corporate","blue","modern","bold"] },
+  { name:"Klarna",        industry:"creative", domain:"klarna.com",        color:"#FFB3C7", tags:["bold","colorful","modern","friendly"] },
+
+  // ── REAL ESTATE (38) ──
+  { name:"CBRE",          industry:"realestate", domain:"cbre.com",         color:"#003087", tags:["corporate","blue","classic","bold"] },
+  { name:"JLL",           industry:"realestate", domain:"jll.com",          color:"#E31837", tags:["bold","red","corporate","modern"] },
+  { name:"Cushman & Wakefield",industry:"realestate",domain:"cushmanwakefield.com",color:"#003087",tags:["corporate","navy","bold","classic"] },
+  { name:"Redfin",        industry:"realestate", domain:"redfin.com",       color:"#CC0000", tags:["bold","red","modern","friendly"] },
+  { name:"Zillow",        industry:"realestate", domain:"zillow.com",       color:"#006AFF", tags:["corporate","blue","modern","bold"] },
+  { name:"Realtor.com",   industry:"realestate", domain:"realtor.com",      color:"#CC0000", tags:["bold","red","classic","corporate"] },
+  { name:"Compass",       industry:"realestate", domain:"compass.com",      color:"#1a1a1a", tags:["minimal","dark","refined","modern"] },
+  { name:"WeWork",        industry:"realestate", domain:"wework.com",       color:"#00D4A1", tags:["modern","green","bold","friendly"] },
+  { name:"Brookfield",    industry:"realestate", domain:"brookfield.com",   color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Prologis",      industry:"realestate", domain:"prologis.com",     color:"#003087", tags:["corporate","blue","modern","clean"] },
+  { name:"Equinix",       industry:"realestate", domain:"equinix.com",      color:"#003087", tags:["corporate","blue","technical","bold"] },
+  { name:"Public Storage",industry:"realestate", domain:"publicstorage.com",color:"#FF8C00", tags:["bold","orange","classic","commercial"] },
+  { name:"Invitation Homes",industry:"realestate",domain:"invitationhomes.com",color:"#003087",tags:["corporate","blue","friendly","modern"] },
+  { name:"AvalonBay",     industry:"realestate", domain:"avalonbay.com",    color:"#003087", tags:["corporate","blue","classic","clean"] },
+  { name:"Airbnb",        industry:"realestate", domain:"airbnb.com",       color:"#FF5A5F", tags:["bold","colorful","modern","friendly"] },
+  { name:"Opendoor",      industry:"realestate", domain:"opendoor.com",     color:"#E05B2B", tags:["bold","warm","modern","friendly"] },
+  { name:"Offerpad",      industry:"realestate", domain:"offerpad.com",     color:"#00A4B4", tags:["modern","blue","clean","friendly"] },
+  { name:"Marcus & Millichap",industry:"realestate",domain:"marcusmillichap.com",color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"CoStar",        industry:"realestate", domain:"costar.com",       color:"#003087", tags:["corporate","blue","technical","bold"] },
+  { name:"Trulia",        industry:"realestate", domain:"trulia.com",       color:"#5A78FF", tags:["modern","blue","friendly","clean"] },
+  { name:"Century 21",    industry:"realestate", domain:"century21.com",    color:"#B89A39", tags:["bold","warm","classic","commercial"] },
+  { name:"RE/MAX",        industry:"realestate", domain:"remax.com",        color:"#E31837", tags:["bold","colorful","classic","commercial"] },
+  { name:"Keller Williams",industry:"realestate",domain:"kw.com",           color:"#CC0000", tags:["bold","red","modern","commercial"] },
+  { name:"Coldwell Banker",industry:"realestate",domain:"coldwellbanker.com",color:"#003087",tags:["corporate","navy","classic","bold"] },
+  { name:"Sotheby's Intl",industry:"realestate", domain:"sothebysrealty.com",color:"#003087",tags:["refined","navy","premium","classic"] },
+  { name:"eXp Realty",    industry:"realestate", domain:"exprealty.com",    color:"#003087", tags:["corporate","blue","modern","bold"] },
+  { name:"Howard Hanna",  industry:"realestate", domain:"howardhanna.com",  color:"#CC0000", tags:["bold","red","classic","friendly"] },
+  { name:"Simon Property",industry:"realestate", domain:"simon.com",        color:"#003087", tags:["corporate","navy","refined","bold"] },
+  { name:"Vornado",       industry:"realestate", domain:"vno.com",          color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"SL Green",      industry:"realestate", domain:"slgreen.com",      color:"#003087", tags:["corporate","navy","modern","clean"] },
+  { name:"Essex Property",industry:"realestate", domain:"essexapartmenthomes.com",color:"#003087",tags:["corporate","blue","clean","modern"] },
+  { name:"UDR",           industry:"realestate", domain:"udr.com",          color:"#003087", tags:["corporate","blue","clean","minimal"] },
+  { name:"National Retail",industry:"realestate",domain:"nnnreit.com",      color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Regency Centers",industry:"realestate",domain:"regencycenters.com",color:"#003087",tags:["corporate","blue","classic","bold"] },
+  { name:"Equity Residential",industry:"realestate",domain:"equityapartments.com",color:"#003087",tags:["corporate","navy","refined","clean"] },
+  { name:"Mid-America Apartment",industry:"realestate",domain:"maac.com",   color:"#CC0000", tags:["bold","red","corporate","bold"] },
+  { name:"Camden Property",industry:"realestate",domain:"camdenliving.com", color:"#003087", tags:["corporate","blue","friendly","clean"] },
+  { name:"Welltower",     industry:"realestate", domain:"welltower.com",    color:"#0072CE", tags:["corporate","blue","modern","clean"] },
+
+  // ── EDUCATION (38) ──
+  { name:"Coursera",      industry:"education", domain:"coursera.org",      color:"#0056D2", tags:["corporate","blue","modern","clean"] },
+  { name:"edX",           industry:"education", domain:"edx.org",           color:"#CC0000", tags:["bold","red","modern","corporate"] },
+  { name:"Khan Academy",  industry:"education", domain:"khanacademy.org",   color:"#14BF96", tags:["modern","green","friendly","clean"] },
+  { name:"Duolingo",      industry:"education", domain:"duolingo.com",      color:"#58CC02", tags:["colorful","playful","bold","friendly"] },
+  { name:"Chegg",         industry:"education", domain:"chegg.com",         color:"#E8A202", tags:["bold","warm","friendly","modern"] },
+  { name:"Skillshare",    industry:"education", domain:"skillshare.com",    color:"#00CC96", tags:["modern","green","clean","friendly"] },
+  { name:"Udemy",         industry:"education", domain:"udemy.com",         color:"#A435F0", tags:["bold","purple","modern","playful"] },
+  { name:"LinkedIn Learning",industry:"education",domain:"linkedin.com",    color:"#0A66C2", tags:["corporate","blue","modern","bold"] },
+  { name:"Quizlet",       industry:"education", domain:"quizlet.com",       color:"#4257B2", tags:["corporate","blue","modern","clean"] },
+  { name:"Brainly",       industry:"education", domain:"brainly.com",       color:"#7B2D8B", tags:["bold","purple","friendly","modern"] },
+  { name:"Cambly",        industry:"education", domain:"cambly.com",        color:"#FFBE00", tags:["bold","warm","friendly","playful"] },
+  { name:"Rosetta Stone", industry:"education", domain:"rosettastone.com",  color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Pearson",       industry:"education", domain:"pearson.com",       color:"#4CAF50", tags:["green","corporate","classic","friendly"] },
+  { name:"McGraw-Hill",   industry:"education", domain:"mheducation.com",   color:"#E31837", tags:["bold","red","corporate","classic"] },
+  { name:"Blackboard",    industry:"education", domain:"blackboard.com",    color:"#CC0000", tags:["bold","red","corporate","classic"] },
+  { name:"Canvas",        industry:"education", domain:"instructure.com",   color:"#E66000", tags:["bold","warm","modern","corporate"] },
+  { name:"Codecademy",    industry:"education", domain:"codecademy.com",    color:"#1F4056", tags:["dark","navy","modern","technical"] },
+  { name:"MasterClass",   industry:"education", domain:"masterclass.com",   color:"#1a1a1a", tags:["minimal","dark","refined","premium"] },
+  { name:"Brilliant",     industry:"education", domain:"brilliant.org",     color:"#F17D00", tags:["bold","warm","modern","friendly"] },
+  { name:"Wolfram Alpha", industry:"education", domain:"wolframalpha.com",  color:"#CC0000", tags:["bold","red","technical","classic"] },
+  { name:"Udacity",       industry:"education", domain:"udacity.com",       color:"#02B3E4", tags:["modern","blue","bold","friendly"] },
+  { name:"DataCamp",      industry:"education", domain:"datacamp.com",      color:"#03EF62", tags:["modern","green","bold","technical"] },
+  { name:"Pluralsight",   industry:"education", domain:"pluralsight.com",   color:"#F15B2A", tags:["bold","warm","modern","technical"] },
+  { name:"Treehouse",     industry:"education", domain:"teamtreehouse.com", color:"#4AA34A", tags:["green","modern","friendly","bold"] },
+  { name:"Babbel",        industry:"education", domain:"babbel.com",        color:"#66CC33", tags:["green","modern","friendly","playful"] },
+  { name:"Turnitin",      industry:"education", domain:"turnitin.com",      color:"#CC0000", tags:["bold","red","corporate","technical"] },
+  { name:"Cengage",       industry:"education", domain:"cengage.com",       color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Discovery Education",industry:"education",domain:"discoveryeducation.com",color:"#003087",tags:["corporate","blue","friendly","bold"] },
+  { name:"IXL Learning",  industry:"education", domain:"ixl.com",           color:"#E35D2F", tags:["bold","warm","modern","friendly"] },
+  { name:"Scholastic",    industry:"education", domain:"scholastic.com",    color:"#CC0000", tags:["bold","red","friendly","classic"] },
+  { name:"Follett",       industry:"education", domain:"follettlearning.com",color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Houghton Mifflin",industry:"education",domain:"hmhco.com",        color:"#CC0000", tags:["bold","red","classic","corporate"] },
+  { name:"D2L Brightspace",industry:"education",domain:"d2l.com",          color:"#E31837", tags:["bold","red","modern","corporate"] },
+  { name:"Nearpod",       industry:"education", domain:"nearpod.com",       color:"#E83E43", tags:["bold","red","modern","friendly"] },
+  { name:"Pear Deck",     industry:"education", domain:"peardeck.com",      color:"#2ECC71", tags:["modern","green","friendly","clean"] },
+  { name:"Seesaw",        industry:"education", domain:"web.seesaw.me",     color:"#3D9BE9", tags:["modern","blue","friendly","playful"] },
+  { name:"PowerSchool",   industry:"education", domain:"powerschool.com",   color:"#003087", tags:["corporate","navy","modern","bold"] },
+  { name:"ClassDojo",     industry:"education", domain:"classdojo.com",     color:"#00BCD4", tags:["modern","colorful","friendly","playful"] },
+
+  // ── TRAVEL (38) ──
+  { name:"Booking.com",   industry:"travel", domain:"booking.com",          color:"#003580", tags:["corporate","navy","classic","bold"] },
+  { name:"Expedia",       industry:"travel", domain:"expedia.com",          color:"#FFC72C", tags:["bold","warm","commercial","playful"] },
+  { name:"Airbnb",        industry:"travel", domain:"airbnb.com",           color:"#FF5A5F", tags:["bold","colorful","modern","friendly"] },
+  { name:"United Airlines",industry:"travel",domain:"united.com",           color:"#1B4597", tags:["corporate","navy","classic","bold"] },
+  { name:"Delta",         industry:"travel", domain:"delta.com",            color:"#CC0000", tags:["bold","red","corporate","classic"] },
+  { name:"American Airlines",industry:"travel",domain:"aa.com",             color:"#00519B", tags:["corporate","blue","classic","bold"] },
+  { name:"Southwest",     industry:"travel", domain:"southwest.com",        color:"#E31837", tags:["bold","colorful","friendly","classic"] },
+  { name:"Emirates",      industry:"travel", domain:"emirates.com",         color:"#C60C30", tags:["bold","red","premium","classic"] },
+  { name:"Marriott",      industry:"travel", domain:"marriott.com",         color:"#C41230", tags:["bold","red","corporate","premium"] },
+  { name:"Hilton",        industry:"travel", domain:"hilton.com",           color:"#003087", tags:["corporate","navy","classic","premium"] },
+  { name:"Hyatt",         industry:"travel", domain:"hyatt.com",            color:"#1a1a1a", tags:["minimal","dark","premium","refined"] },
+  { name:"Ritz-Carlton",  industry:"travel", domain:"ritzcarlton.com",      color:"#003087", tags:["refined","navy","premium","classic"] },
+  { name:"Tripadvisor",   industry:"travel", domain:"tripadvisor.com",      color:"#00AF87", tags:["colorful","friendly","modern","bold"] },
+  { name:"Kayak",         industry:"travel", domain:"kayak.com",            color:"#FF690F", tags:["bold","orange","modern","playful"] },
+  { name:"VRBO",          industry:"travel", domain:"vrbo.com",             color:"#1B82FA", tags:["corporate","blue","modern","friendly"] },
+  { name:"Hertz",         industry:"travel", domain:"hertz.com",            color:"#FFD700", tags:["bold","warm","classic","commercial"] },
+  { name:"Carnival",      industry:"travel", domain:"carnival.com",         color:"#003087", tags:["colorful","bold","playful","corporate"] },
+  { name:"Royal Caribbean",industry:"travel",domain:"royalcaribbean.com",   color:"#003087", tags:["corporate","navy","bold","classic"] },
+  { name:"Norwegian Cruise",industry:"travel",domain:"ncl.com",             color:"#003087", tags:["corporate","navy","bold","classic"] },
+  { name:"Wyndham",       industry:"travel", domain:"wyndham.com",          color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Priceline",     industry:"travel", domain:"priceline.com",        color:"#003087", tags:["corporate","navy","bold","commercial"] },
+  { name:"Hotels.com",    industry:"travel", domain:"hotels.com",           color:"#CC0000", tags:["bold","red","commercial","friendly"] },
+  { name:"Agoda",         industry:"travel", domain:"agoda.com",            color:"#E31837", tags:["bold","red","modern","commercial"] },
+  { name:"Qatar Airways", industry:"travel", domain:"qatarairways.com",     color:"#5C0632", tags:["bold","dark","premium","refined"] },
+  { name:"Singapore Airlines",industry:"travel",domain:"singaporeair.com",  color:"#003087", tags:["refined","navy","premium","classic"] },
+  { name:"British Airways",industry:"travel", domain:"britishairways.com",  color:"#003087", tags:["corporate","navy","classic","premium"] },
+  { name:"Air France",    industry:"travel", domain:"airfrance.com",        color:"#003087", tags:["corporate","navy","refined","classic"] },
+  { name:"Lufthansa",     industry:"travel", domain:"lufthansa.com",        color:"#003087", tags:["corporate","navy","refined","classic"] },
+  { name:"JetBlue",       industry:"travel", domain:"jetblue.com",          color:"#003087", tags:["corporate","blue","friendly","modern"] },
+  { name:"Spirit Airlines",industry:"travel",domain:"spirit.com",           color:"#FFD100", tags:["bold","colorful","commercial","playful"] },
+  { name:"IHG",           industry:"travel", domain:"ihg.com",              color:"#003087", tags:["corporate","navy","classic","bold"] },
+  { name:"Best Western",  industry:"travel", domain:"bestwestern.com",      color:"#003087", tags:["corporate","navy","classic","friendly"] },
+  { name:"Four Seasons",  industry:"travel", domain:"fourseasons.com",      color:"#003087", tags:["refined","navy","premium","minimal"] },
+  { name:"W Hotels",      industry:"travel", domain:"marriott.com/w-hotels",color:"#1a1a1a", tags:["minimal","dark","premium","modern"] },
+  { name:"Accor",         industry:"travel", domain:"accor.com",            color:"#CC0000", tags:["bold","red","corporate","modern"] },
+  { name:"InterContinental",industry:"travel",domain:"ihg.com/intercontinental",color:"#003087",tags:["refined","navy","premium","classic"] },
+  { name:"Club Med",      industry:"travel", domain:"clubmed.com",          color:"#CC0000", tags:["bold","red","friendly","playful"] },
+  { name:"G Adventures", industry:"travel", domain:"gadventures.com",       color:"#F47920", tags:["bold","warm","modern","friendly"] },
+
+  // ── GAMING (40) ──
+  { name:"Nintendo",      industry:"gaming", domain:"nintendo.com",         color:"#E60012", tags:["bold","red","playful","iconic"] },
+  { name:"Sony PlayStation",industry:"gaming",domain:"playstation.com",     color:"#003087", tags:["corporate","navy","bold","modern"] },
+  { name:"Xbox",          industry:"gaming", domain:"xbox.com",             color:"#107C10", tags:["bold","green","modern","playful"] },
+  { name:"Steam",         industry:"gaming", domain:"steampowered.com",     color:"#1B2838", tags:["dark","navy","modern","technical"] },
+  { name:"Epic Games",    industry:"gaming", domain:"epicgames.com",        color:"#1a1a1a", tags:["minimal","dark","modern","bold"] },
+  { name:"Riot Games",    industry:"gaming", domain:"riotgames.com",        color:"#CC0000", tags:["bold","red","angular","modern"] },
+  { name:"Activision",    industry:"gaming", domain:"activision.com",       color:"#1a1a1a", tags:["minimal","dark","bold","corporate"] },
+  { name:"Electronic Arts",industry:"gaming",domain:"ea.com",               color:"#1a1a1a", tags:["minimal","dark","modern","bold"] },
+  { name:"Ubisoft",       industry:"gaming", domain:"ubisoft.com",          color:"#003087", tags:["corporate","navy","bold","modern"] },
+  { name:"Take-Two",      industry:"gaming", domain:"take2games.com",       color:"#1a1a1a", tags:["minimal","dark","corporate","bold"] },
+  { name:"Bethesda",      industry:"gaming", domain:"bethesda.net",         color:"#1a1a1a", tags:["dark","minimal","bold","iconic"] },
+  { name:"Capcom",        industry:"gaming", domain:"capcom.com",           color:"#003087", tags:["corporate","navy","bold","classic"] },
+  { name:"Bandai Namco",  industry:"gaming", domain:"bandainamcoent.com",   color:"#CC0000", tags:["bold","red","colorful","playful"] },
+  { name:"Sega",          industry:"gaming", domain:"sega.com",             color:"#003087", tags:["bold","navy","classic","iconic"] },
+  { name:"CD Projekt Red",industry:"gaming", domain:"cdprojekt.com",        color:"#CC0000", tags:["bold","red","angular","modern"] },
+  { name:"Valve",         industry:"gaming", domain:"valvesoftware.com",    color:"#CC0000", tags:["bold","red","modern","classic"] },
+  { name:"Blizzard",      industry:"gaming", domain:"blizzard.com",         color:"#003087", tags:["corporate","navy","bold","classic"] },
+  { name:"2K Games",      industry:"gaming", domain:"2k.com",               color:"#CC0000", tags:["bold","red","modern","corporate"] },
+  { name:"Konami",        industry:"gaming", domain:"konami.com",           color:"#CC0000", tags:["bold","red","classic","corporate"] },
+  { name:"Roblox",        industry:"gaming", domain:"roblox.com",           color:"#CC0000", tags:["bold","playful","colorful","friendly"] },
+  { name:"Square Enix",   industry:"gaming", domain:"square-enix.com",      color:"#1a1a1a", tags:["minimal","dark","classic","bold"] },
+  { name:"Rockstar Games",industry:"gaming", domain:"rockstargames.com",    color:"#E2C600", tags:["bold","colorful","iconic","angular"] },
+  { name:"FromSoftware",  industry:"gaming", domain:"fromsoftware.jp",      color:"#1a1a1a", tags:["minimal","dark","bold","angular"] },
+  { name:"Bungie",        industry:"gaming", domain:"bungie.net",           color:"#1a1a1a", tags:["dark","minimal","modern","angular"] },
+  { name:"Naughty Dog",   industry:"gaming", domain:"naughtydog.com",       color:"#1a1a1a", tags:["minimal","dark","playful","bold"] },
+  { name:"Insomniac Games",industry:"gaming",domain:"insomniacgames.com",   color:"#003087", tags:["corporate","navy","bold","modern"] },
+  { name:"Respawn",       industry:"gaming", domain:"respawn.com",          color:"#1a1a1a", tags:["minimal","dark","modern","bold"] },
+  { name:"Gearbox",       industry:"gaming", domain:"gearboxsoftware.com",  color:"#CC0000", tags:["bold","red","playful","modern"] },
+  { name:"Warner Bros Games",industry:"gaming",domain:"wbgames.com",        color:"#1F4E8C", tags:["corporate","navy","bold","classic"] },
+  { name:"Zynga",         industry:"gaming", domain:"zynga.com",            color:"#CC0000", tags:["bold","red","playful","commercial"] },
+  { name:"King",          industry:"gaming", domain:"king.com",             color:"#F7BD00", tags:["colorful","bold","playful","friendly"] },
+  { name:"Supercell",     industry:"gaming", domain:"supercell.com",        color:"#1a1a1a", tags:["minimal","dark","bold","clean"] },
+  { name:"Niantic",       industry:"gaming", domain:"nianticlabs.com",      color:"#E31837", tags:["bold","red","modern","corporate"] },
+  { name:"Paradox Interactive",industry:"gaming",domain:"paradoxinteractive.com",color:"#CC0000",tags:["bold","red","angular","modern"] },
+  { name:"THQ Nordic",    industry:"gaming", domain:"thqnordic.com",        color:"#CC0000", tags:["bold","red","modern","corporate"] },
+  { name:"Focus Entertainment",industry:"gaming",domain:"focus-entmt.com",  color:"#CC0000", tags:["bold","red","modern","angular"] },
+  { name:"NetEase Games", industry:"gaming", domain:"neteasegames.com",     color:"#CC0000", tags:["bold","red","modern","corporate"] },
+  { name:"HoYoverse",     industry:"gaming", domain:"hoyoverse.com",        color:"#003087", tags:["corporate","navy","modern","bold"] },
+  { name:"Devolver Digital",industry:"gaming",domain:"devolverdigital.com", color:"#1a1a1a", tags:["minimal","dark","bold","angular"] },
+  { name:"Annapurna Interactive",industry:"gaming",domain:"annapurnainteractive.com",color:"#E31837",tags:["bold","red","modern","refined"] },
+];
+
+// ─────────────────────────────────────────────────────────────
+// TASTE PROFILES
+// ─────────────────────────────────────────────────────────────
+const PROFILE_RULES = [
+  { match:["minimal","dark","monochrome"],  label:"Sleek & Monochrome",    desc:"You're drawn to stripped-back, confident design that says everything with nothing." },
+  { match:["minimal","dark","modern"],      label:"Dark & Modern",         desc:"You gravitate toward bold restraint — logos that feel at home in premium, contemporary brands." },
+  { match:["minimal","symbolic"],           label:"Minimal & Symbolic",    desc:"You value meaning over decoration. A single shape or mark speaks louder than a thousand words to you." },
+  { match:["colorful","playful","rounded"], label:"Playful & Colourful",   desc:"You love energy and personality. Logos that feel alive and approachable win your heart every time." },
+  { match:["colorful","geometric"],         label:"Geometric & Vibrant",   desc:"Structure meets expression. You appreciate logos built on clear visual logic but with personality." },
+  { match:["bold","iconic","geometric"],    label:"Bold & Iconic",         desc:"You're drawn to marks that command attention — shapes and symbols that become instantly recognisable." },
+  { match:["refined","corporate","navy"],   label:"Refined & Corporate",   desc:"You appreciate understated authority. Logos that project trust and longevity resonate most with you." },
+  { match:["classic","bold","red"],         label:"Classic & Assertive",   desc:"You like logos that own the room. Bold, timeless, and unapologetically confident." },
+  { match:["warm","friendly","organic"],    label:"Warm & Organic",        desc:"You connect with logos that feel human. Warm tones and natural shapes signal authenticity to you." },
+  { match:["corporate","blue","clean"],     label:"Clean & Professional",  desc:"You trust clarity. Logos that communicate competence without flashiness speak your language." },
+  { match:["premium","dark","refined"],     label:"Premium & Understated", desc:"Less is always more to you. The restraint in a logo is where you read the real luxury." },
+  { match:["bold","commercial"],            label:"Bold & Commercial",     desc:"You respect logos that work hard — clear, direct, and built to be seen at scale." },
+  { match:["modern","clean"],              label:"Modern & Clean",        desc:"You lean forward. Contemporary logos with clear intentions and no clutter appeal to your eye." },
+  { match:["minimal"],                     label:"Minimal First",         desc:"You have a consistent gut reaction to whitespace and simplicity. Less noise, more signal." },
+  { match:["bold"],                        label:"Bold & Confident",      desc:"You respond to visual confidence. Strong marks, strong type, strong convictions." },
+  { match:["colorful"],                    label:"Vibrant & Expressive",  desc:"Colour makes your decisions. Logos with a distinct palette and emotional energy win you over." },
+];
+
+// ─────────────────────────────────────────────────────────────
+// INDUSTRY CONFIG
+// ─────────────────────────────────────────────────────────────
+const INDUSTRIES = {
+  tech:      { label:"Tech",         emoji:"💻" },
+  finance:   { label:"Finance",      emoji:"🏦" },
+  retail:    { label:"Retail",       emoji:"🛍️" },
+  health:    { label:"Health",       emoji:"🏥" },
+  creative:  { label:"Creative",     emoji:"🎨" },
+  realestate:{ label:"Real Estate",  emoji:"🏠" },
+  education: { label:"Education",    emoji:"🎓" },
+  auto:      { label:"Automotive",   emoji:"🚗" },
+  travel:    { label:"Travel",       emoji:"✈️" },
+  food:      { label:"Food & Bev",   emoji:"🍔" },
+  energy:    { label:"Energy",       emoji:"⚡" },
+  gaming:    { label:"Gaming",       emoji:"🎮" },
+};
+
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let state = { industries:[], industry:null, queue:[], index:0, loved:[], hated:[], times:[], cardStart:0, comments:{}, imgCache:{} };
+let drag  = { active:false, startX:0, currentX:0, card:null };
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+function init() {
+  const grid = document.getElementById('industry-grid');
+  Object.entries(INDUSTRIES).forEach(([key, ind]) => {
+    const btn = document.createElement('button');
+    btn.className = 'industry-btn';
+    btn.dataset.key = key;
+    btn.innerHTML = `<span class="ind-icon">${ind.emoji}</span><span class="ind-label">${ind.label}</span>`;
+    btn.onclick = () => startSession(key);
+    grid.appendChild(btn);
+  });
+}
+
+function startSession(key) {
+  const all = shuffle(LOGOS.filter(l => l.industry === key));
+  state = {
+    industries: [key],
+    industry: key,
+    queue: all.slice(0, LOGOS_PER_SESSION),
+    index: 0, loved: [], hated: [], times: [], cardStart: 0, comments: {},
+    imgCache: {}
+  };
+  showScreen('screen-swipe');
+  updateProgress();
+  renderCard();
+}
+
+// ─────────────────────────────────────────────────────────────
+// CARD RENDER
+// ─────────────────────────────────────────────────────────────
+function renderCard() {
+  const stack = document.getElementById('card-stack');
+  const old = stack.querySelector('.logo-card');
+  if (old) old.remove();
+
+  if (state.index >= state.queue.length) { showResults(); return; }
+
+  const logo = state.queue[state.index];
+  const card = document.createElement('div');
+  card.className = 'logo-card';
+
+  const initial = logo.name.charAt(0).toUpperCase();
+  const existingNote = state.comments[logo.domain] || '';
+  const indInfo = INDUSTRIES[logo.industry] || { emoji:'🏢', label: logo.industry };
+  card.innerHTML = `
+    <div class="card-industry-tag">
+      <div class="card-industry-tag-inner">${indInfo.emoji} ${indInfo.label}</div>
+    </div>
+    <div class="logo-stage">
+      <div class="logo-stage-inner">
+        <img
+          src="https://img.logo.dev/${logo.domain}?token=${LOGO_API_TOKEN}&size=200"
+          alt="${logo.name}"
+          onload="state.imgCache['${logo.domain}']=this.src"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        />
+        <div class="logo-fallback" style="display:none;background:${logo.color}">${initial}</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-name">${logo.name}</div>
+      <div class="card-industry-badge">${indInfo.label}</div>
+    </div>
+    <div class="card-note-row" onclick="openComment()">
+      <span class="material-symbols-rounded">edit_note</span>
+      <span class="card-note-row-text" id="note-indicator">${existingNote ? '✎ ' + existingNote : 'Add a note about this logo…'}</span>
+    </div>
+    <div class="card-label-love">LOVE</div>
+    <div class="card-label-hate">HATE</div>`;
+
+  stack.appendChild(card);
+  state.cardStart = Date.now();
+  drag.card = card;
+  bindDrag(card);
+}
+
+// ─────────────────────────────────────────────────────────────
+// DRAG / SWIPE — Pointer Events (handles out-of-window release)
+// ─────────────────────────────────────────────────────────────
+function bindDrag(card) {
+  card.addEventListener('pointerdown', dragStart);
+}
+function dragStart(e) {
+  if (e.button !== undefined && e.button !== 0) return; // left click / touch only
+  if (e.target.closest('.card-note-row')) return; // let note row handle its own click
+  drag.active = true;
+  drag.startX = e.clientX;
+  drag.card = e.currentTarget;
+  drag.currentX = 0;
+  drag.card.style.transition = 'none';
+  drag.card.setPointerCapture(e.pointerId); // captures even outside window
+  drag.card.addEventListener('pointermove', dragMove);
+  drag.card.addEventListener('pointerup', dragEnd);
+  drag.card.addEventListener('pointercancel', dragCancel);
+}
+function dragMove(e) {
+  if (!drag.active) return;
+  drag.currentX = e.clientX - drag.startX;
+  drag.card.style.transform = `translateX(${drag.currentX}px) rotate(${drag.currentX * 0.07}deg)`;
+  const love = drag.card.querySelector('.card-label-love');
+  const hate = drag.card.querySelector('.card-label-hate');
+  if (drag.currentX > 0) {
+    love.style.opacity = Math.min((drag.currentX - 30) / 60, 1);
+    hate.style.opacity = 0;
+  } else {
+    hate.style.opacity = Math.min((-drag.currentX - 30) / 60, 1);
+    love.style.opacity = 0;
+  }
+}
+function dragEnd(e) {
+  if (!drag.active) return;
+  drag.active = false;
+  drag.card.removeEventListener('pointermove', dragMove);
+  drag.card.removeEventListener('pointerup', dragEnd);
+  drag.card.removeEventListener('pointercancel', dragCancel);
+  if      (drag.currentX >  100) flyCard('love');
+  else if (drag.currentX < -100) flyCard('hate');
+  else {
+    drag.card.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+    drag.card.style.transform = '';
+    drag.card.querySelectorAll('.card-label-love,.card-label-hate').forEach(el => el.style.opacity = 0);
+  }
+}
+function dragCancel() {
+  if (!drag.active || !drag.card) return;
+  drag.active = false;
+  drag.card.removeEventListener('pointermove', dragMove);
+  drag.card.removeEventListener('pointerup', dragEnd);
+  drag.card.removeEventListener('pointercancel', dragCancel);
+  drag.card.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+  drag.card.style.transform = '';
+  drag.card.querySelectorAll('.card-label-love,.card-label-hate').forEach(el => el.style.opacity = 0);
+}
+
+function triggerLove() { if (drag.card) flyCard('love'); }
+function triggerHate() { if (drag.card) flyCard('hate'); }
+
+function flyCard(direction) {
+  if (!drag.card) return;
+  state.times.push((Date.now() - state.cardStart) / 1000);
+  const logo = state.queue[state.index];
+  if (direction === 'love') state.loved.push(logo);
+  else                      state.hated.push(logo);
+  const x = direction === 'love' ? 700 : -700;
+  drag.card.style.transition = 'transform 0.36s cubic-bezier(0.4,0,0.2,1)';
+  drag.card.style.transform  = `translateX(${x}px) rotate(${direction === 'love' ? 20 : -20}deg)`;
+  drag.card = null;
+  setTimeout(() => { state.index++; updateProgress(); renderCard(); }, 320);
+}
+
+document.addEventListener('keydown', e => {
+  if (document.querySelector('.screen.active')?.id !== 'screen-swipe') return;
+  if (e.key === 'ArrowRight') triggerLove();
+  if (e.key === 'ArrowLeft')  triggerHate();
+  if (e.key === 'n' || e.key === 'N') openComment();
+});
+
+// ─────────────────────────────────────────────────────────────
+// PROGRESS
+// ─────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = state.queue.length;
+  document.getElementById('progress-fill').style.width = (total ? (state.index / total) * 100 : 0) + '%';
+  document.getElementById('progress-label').textContent = `${state.index} of ${total} rated`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMMENT MODAL
+// ─────────────────────────────────────────────────────────────
+function openComment() {
+  if (state.index >= state.queue.length) return;
+  const logo = state.queue[state.index];
+  document.getElementById('comment-logo-name').textContent = logo.name;
+  document.getElementById('comment-input').value = state.comments[logo.domain] || '';
+  document.getElementById('comment-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('comment-input').focus(), 50);
+}
+function closeComment() {
+  document.getElementById('comment-overlay').classList.remove('open');
+}
+function closeCommentOutside(e) {
+  if (e.target === document.getElementById('comment-overlay')) closeComment();
+}
+function saveComment() {
+  const logo = state.queue[state.index];
+  const text = document.getElementById('comment-input').value.trim();
+  if (text) {
+    state.comments[logo.domain] = text;
+    const indicator = document.getElementById('note-indicator');
+    if (indicator) indicator.textContent = '✎ ' + text;
+  } else {
+    delete state.comments[logo.domain];
+    const indicator = document.getElementById('note-indicator');
+    if (indicator) indicator.textContent = 'Add a note about this logo…';
+  }
+  closeComment();
+  showToast(text ? 'Note saved' : 'Note removed');
+}
+
+// ─────────────────────────────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────────────────────────────
+function showResults() {
+  showScreen('screen-results');
+
+  const avg = state.times.length
+    ? (state.times.reduce((a,b) => a+b, 0) / state.times.length)
+    : 0;
+  const avgDisplay = avg ? avg.toFixed(1) + 's' : '—';
+
+  document.getElementById('stat-time').textContent  = avgDisplay;
+  document.getElementById('stat-loved').textContent = state.loved.length;
+  document.getElementById('stat-hated').textContent = state.hated.length;
+  const total = state.queue.length || 1;
+  const lovedBar = document.getElementById('stat-loved-bar');
+  const hatedBar = document.getElementById('stat-hated-bar');
+  if (lovedBar) lovedBar.style.width = Math.round((state.loved.length / total) * 100) + '%';
+  if (hatedBar) hatedBar.style.width = Math.round((state.hated.length / total) * 100) + '%';
+
+  const ind = INDUSTRIES[state.industry]?.label || state.industry;
+
+  // Profile
+  const { label, desc } = computeProfile(state.loved);
+  document.getElementById('taste-badge').textContent      = label;
+  document.getElementById('taste-description').textContent = desc;
+
+  // Decision speed
+  let speedVal, speedDesc, speedColor;
+  if (!avg) { speedVal = '—'; speedDesc = ''; speedColor = '#555'; }
+  else if (avg < 2) { speedVal = 'Instinctive'; speedDesc = 'Your gut makes the call'; speedColor = '#22C55E'; }
+  else if (avg < 4) { speedVal = 'Considered'; speedDesc = 'You take a beat to decide'; speedColor = '#F59E0B'; }
+  else if (avg < 7) { speedVal = 'Deliberate'; speedDesc = 'You study before you judge'; speedColor = '#60A5FA'; }
+  else              { speedVal = 'Contemplative'; speedDesc = 'Design really makes you think'; speedColor = '#A78BFA'; }
+  document.getElementById('speed-val').textContent  = speedVal;
+  document.getElementById('speed-desc').textContent = speedDesc;
+  document.getElementById('speed-pip').style.background = speedColor;
+
+  // Style DNA bars + contrast insight
+  buildDNA(state.loved, state.hated);
+
+  // Logo grids — scored by representativeness, not chronological order
+  renderLogoGrid('loved-grid', getRepresentative(state.loved, 3), 'loved');
+  renderLogoGrid('hated-grid', getRepresentative(state.hated, 3), 'hated');
+
+  // Notes
+  const allNotes = Object.entries(state.comments);
+  if (allNotes.length) {
+    document.getElementById('notes-section').style.display = 'block';
+    const list = document.getElementById('notes-list');
+    list.innerHTML = '';
+    allNotes.forEach(([domain, text]) => {
+      const logo = LOGOS.find(l => l.domain === domain);
+      const row = document.createElement('div');
+      row.className = 'note-row';
+      row.innerHTML = `<div class="note-company">${logo?.name || domain}</div><div class="note-text">"${text}"</div>`;
+      list.appendChild(row);
+    });
+  }
+}
+
+// Score a list of logos by how well their tags match a frequency tally
+// Returns top N logos most representative of the user's taste
+function getRepresentative(logos, n) {
+  if (!logos.length) return [];
+  const tally = {};
+  logos.forEach(l => (l.tags||[]).forEach(t => tally[t] = (tally[t]||0) + 1));
+  return logos
+    .map(logo => ({ logo, score: (logo.tags||[]).reduce((s,t) => s + (tally[t]||0), 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n)
+    .map(x => x.logo);
+}
+
+function buildDNA(loved, hated) {
+  // Tag counts for loved and hated
+  const lovedTally = {}, hatedTally = {};
+  loved.forEach(l => (l.tags||[]).forEach(t => lovedTally[t] = (lovedTally[t]||0) + 1));
+  hated.forEach(l => (l.tags||[]).forEach(t => hatedTally[t] = (hatedTally[t]||0) + 1));
+
+  const lovedTotal = loved.length || 1;
+  const sorted = Object.entries(lovedTally).sort((a,b) => b[1]-a[1]).slice(0,6);
+  const max = sorted[0]?.[1] || 1;
+
+  // Contrast: tags you loved that you almost never skipped (signal tags)
+  const signalTags = Object.entries(lovedTally)
+    .filter(([t, c]) => c >= 2 && (hatedTally[t]||0) / c < 0.4)
+    .sort((a,b) => b[1]-a[1])
+    .slice(0,3)
+    .map(([t]) => t);
+
+  const container = document.getElementById('dna-bars');
+  container.innerHTML = '';
+
+  if (!sorted.length) {
+    container.innerHTML = `<span style="color:var(--muted);font-size:0.78rem">No data yet</span>`;
+    return;
+  }
+
+  // Insight line at top
+  if (signalTags.length) {
+    const pct = Math.round((lovedTally[signalTags[0]] / lovedTotal) * 100);
+    const insight = document.createElement('div');
+    insight.style.cssText = 'font-size:0.8rem;color:var(--text);font-weight:500;line-height:1.5;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:12px 14px;margin-bottom:12px;';
+    insight.textContent = `${pct}% of logos you loved were ${signalTags.join(', ')} — these are your true differentiators.`;
+    container.appendChild(insight);
+  }
+
+  sorted.forEach(([tag, count]) => {
+    const pct      = Math.round((count / max) * 100);
+    const lovedPct = Math.round((count / lovedTotal) * 100);
+    const isSignal = signalTags.includes(tag);
+    const row = document.createElement('div');
+    row.className = 'dna-row';
+    row.innerHTML = `
+      <span class="dna-tag" style="${isSignal ? 'color:var(--text);font-weight:600' : ''}">${tag}</span>
+      <div class="dna-bar-wrap"><div class="dna-bar" style="width:0%;${isSignal ? 'background:#0A0A0A' : ''}" data-pct="${pct}"></div></div>
+      <span class="dna-count">${lovedPct}%</span>`;
+    container.appendChild(row);
+  });
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.dna-bar').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  });
+}
+
+function renderLogoGrid(id, logos, type) {
+  const grid = document.getElementById(id);
+  grid.innerHTML = '';
+  if (!logos.length) {
+    grid.innerHTML = `<span style="color:var(--muted);font-size:0.78rem;padding:8px 0;grid-column:1/-1">None selected</span>`;
+    return;
+  }
+  logos.forEach(logo => {
+    const initial = logo.name.charAt(0).toUpperCase();
+    const note = state.comments[logo.domain];
+    const card = document.createElement('div');
+    card.className = `result-logo-card ${type}`;
+    const cachedSrc = state.imgCache?.[logo.domain];
+    const imgSrc = cachedSrc || `https://img.logo.dev/${logo.domain}?token=${LOGO_API_TOKEN}&size=150`;
+    card.innerHTML = `
+      <div class="result-logo-mini">
+        <img src="${imgSrc}" alt="${logo.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="mini-fallback" style="display:none;background:${logo.color}">${initial}</div>
+      </div>
+      <span class="result-logo-name">${logo.name}</span>
+      ${note ? `<span class="result-logo-note">"${note}"</span>` : ''}`;
+    grid.appendChild(card);
+  });
+}
+
+function computeProfile(loved) {
+  if (!loved.length) return { label:'No Clear Preference', desc:'You were selective — no pattern emerged yet. Try a different industry.' };
+  const tally = {};
+  loved.forEach(l => (l.tags||[]).forEach(t => tally[t] = (tally[t]||0)+1));
+  let best = null, bestScore = -1;
+  PROFILE_RULES.forEach(rule => {
+    const score = rule.match.reduce((s,t) => s+(tally[t]||0), 0);
+    if (score > bestScore) { bestScore = score; best = rule; }
+  });
+  return best || { label:'Eclectic Taste', desc:"Your taste spans many visual directions — you're drawn to quality over any single style." };
+}
+
+// ─────────────────────────────────────────────────────────────
+// SUMMARY CONTENT BUILDER
+// ─────────────────────────────────────────────────────────────
+function buildSummaryText() {
+  const ind    = INDUSTRIES[state.industry]?.label || state.industry;
+  const { label, desc } = computeProfile(state.loved);
+  const avg    = document.getElementById('stat-time').textContent;
+  const speed  = document.getElementById('speed-val').textContent;
+  const speedDesc = document.getElementById('speed-desc').textContent;
+
+  const tally = {};
+  state.loved.forEach(l => (l.tags||[]).forEach(t => tally[t] = (tally[t]||0)+1));
+  const dnaFull = Object.entries(tally).sort((a,b)=>b[1]-a[1]);
+  const dnaTop  = dnaFull.slice(0,3).map(([t])=>t).join(', ') || '—';
+
+  const topLoved = getRepresentative(state.loved, 3).map(l=>l.name).join(', ') || 'None';
+  const allLoved = state.loved.map(l=>l.name).join(', ') || 'None';
+  const allHated = state.hated.map(l=>l.name).join(', ') || 'None';
+
+  // Signal tags (loved but rarely skipped)
+  const hTally = {};
+  state.hated.forEach(l => (l.tags||[]).forEach(t => hTally[t] = (hTally[t]||0)+1));
+  const lTotal = state.loved.length || 1;
+  const signalTags = Object.entries(dnaFull.reduce((o,[t,c])=>{o[t]=c;return o},{}))
+    .filter(([t,c]) => c >= 2 && (hTally[t]||0)/c < 0.4)
+    .sort((a,b)=>b[1]-a[1]).slice(0,3).map(([t])=>t);
+
+  const notes = Object.entries(state.comments)
+    .map(([d,n]) => `  - ${LOGOS.find(l=>l.domain===d)?.name||d}: "${n}"`)
+    .join('\n');
+
+  return { ind, label, desc, avg, speed, speedDesc, dnaTop, dnaFull, topLoved, allLoved, allHated, signalTags, notes };
+}
+
+function copyResults() {
+  const { ind, label, avg, speed, dnaTop, allLoved, allHated, notes } = buildSummaryText();
+  let text = `Logo Crush\n${'─'.repeat(28)}\nIndustry: ${ind}\nCrush Profile: ${label}\nDecision Style: ${speed} · Avg: ${avg}\nStyle DNA: ${dnaTop}\n\nLoved: ${allLoved}\nSkipped: ${allHated}`;
+  if (notes) text += `\n\nNotes:\n${notes}`;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+function downloadMD() {
+  const { ind, label, desc, avg, speed, speedDesc, dnaFull, topLoved, allLoved, allHated, signalTags, notes } = buildSummaryText();
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const lovedTotal = state.loved.length || 1;
+  const dnaRows = dnaFull.map(([t,c]) => `| ${t} | ${c} | ${Math.round(c/lovedTotal*100)}% |`).join('\n');
+  const signalLine = signalTags.length ? `\n**Differentiator traits** (loved consistently, rarely skipped): ${signalTags.join(', ')}` : '';
+
+  let md = `# Logo Crush — ${ind}\n_${date}_\n\n`;
+  md += `## Taste Archetype: ${label}\n${desc}\n${signalLine}\n\n`;
+  md += `## Session Stats\n- **Industry:** ${ind}\n- **Decision Style:** ${speed} — ${speedDesc}\n- **Avg Decision Time:** ${avg}\n- **Logos Loved:** ${state.loved.length} / ${state.queue.length}\n- **Logos Skipped:** ${state.hated.length} / ${state.queue.length}\n\n`;
+  md += `## Most Representative Logos (by tag overlap score)\n${topLoved}\n\n`;
+  md += `## Style DNA (% of loved logos with each trait)\n| Trait | Count | % of Loved |\n|-------|-------|------------|\n${dnaRows}\n\n`;
+  md += `## All Loved Logos (${state.loved.length})\n${state.loved.map((l,i)=>`${i+1}. **${l.name}** — ${l.tags?.join(', ')||''}`).join('\n') || 'None'}\n\n`;
+  md += `## All Skipped Logos (${state.hated.length})\n${state.hated.map((l,i)=>`${i+1}. ${l.name}`).join('\n') || 'None'}\n\n`;
+  if (notes) md += `## Your Notes\n${notes}\n\n`;
+  md += `---\n_Generated by Logo Crush · Feed this to an AI to get design recommendations_\n`;
+
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `logo-crush-${ind.toLowerCase().replace(/\s+/g,'-')}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded .md file');
+}
+
+function downloadPDF() {
+  const { ind, label, desc, avg, speed, speedDesc, dnaFull, topLoved, allLoved, allHated, signalTags, notes } = buildSummaryText();
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const lt = state.loved.length || 1;
+  const dnaRows = dnaFull.map(([t,c]) => `<tr><td>${t}</td><td>${c}</td><td>${Math.round(c/lt*100)}%</td></tr>`).join('');
+  const lovedList = state.loved.map((l,i) => `<li>${l.name} <span style="color:#8E8EA0;font-size:11px">${l.tags?.join(', ')||''}</span></li>`).join('');
+  const hatedList = state.hated.map(l => `<li>${l.name}</li>`).join('');
+  const notesList = Object.entries(state.comments).map(([d,n]) => {
+    const name = LOGOS.find(l=>l.domain===d)?.name||d;
+    return `<li><strong>${name}:</strong> "${n}"</li>`;
+  }).join('');
+
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Logo Crush — ${ind}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; max-width: 680px; margin: 40px auto; color: #0A0A0A; line-height: 1.6; padding: 0 24px; }
+    h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .meta { color: #8E8EA0; font-size: 13px; margin-bottom: 32px; }
+    h2 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #8E8EA0; margin: 28px 0 10px; border-top: 1px solid #E8E8EE; padding-top: 20px; }
+    .archetype { background: #0A0A0A; color: #fff; border-radius: 16px; padding: 20px; margin-bottom: 8px; }
+    .archetype-name { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .archetype-desc { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    td, th { padding: 6px 10px; text-align: left; border-bottom: 1px solid #F0F0F5; }
+    th { font-weight: 600; color: #8E8EA0; }
+    ul { padding-left: 18px; font-size: 13px; }
+    li { margin-bottom: 4px; }
+    .stats { display: flex; gap: 16px; margin-bottom: 8px; }
+    .stat { flex:1; background: #F5F5F7; border-radius: 12px; padding: 14px; }
+    .stat-val { font-size: 24px; font-weight: 700; }
+    .stat-lbl { font-size: 11px; color: #8E8EA0; text-transform: uppercase; letter-spacing: 0.06em; }
+    @media print { body { margin: 20px auto; } }
+  </style></head><body>
+  <h1>Logo Crush</h1>
+  <div class="meta">${ind} · ${date}</div>
+  <div class="archetype">
+    <div class="archetype-name">${label}</div>
+    <div class="archetype-desc">${desc}</div>
+  </div>
+  <h2>Stats</h2>
+  <div class="stats">
+    <div class="stat"><div class="stat-val">${state.loved.length}</div><div class="stat-lbl">Loved</div></div>
+    <div class="stat"><div class="stat-val">${state.hated.length}</div><div class="stat-lbl">Skipped</div></div>
+    <div class="stat"><div class="stat-val">${avg}</div><div class="stat-lbl">Avg Speed</div></div>
+  </div>
+  <p style="font-size:13px;color:#6E6E82;margin-top:8px"><strong>Decision Style:</strong> ${speed} — ${speedDesc}</p>
+  ${signalTags.length ? `<p style="font-size:13px;color:#0A0A0A;margin-top:8px;background:#F5F5F7;border-radius:10px;padding:10px 14px"><strong>Differentiators:</strong> ${signalTags.join(', ')} — traits you loved and almost never skipped</p>` : ''}
+  <h2>Style DNA (% of loved logos with each trait)</h2>
+  <table><tr><th>Trait</th><th>Count</th><th>% of Loved</th></tr>${dnaRows}</table>
+  <h2>All Loved Logos (${state.loved.length})</h2>
+  <ul>${lovedList || '<li>None</li>'}</ul>
+  <h2>All Skipped Logos (${state.hated.length})</h2>
+  <ul>${hatedList || '<li>None</li>'}</ul>
+  ${notesList ? `<h2>Your Notes</h2><ul>${notesList}</ul>` : ''}
+  </body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 400);
+}
+
+// ─────────────────────────────────────────────────────────────
+// SEE ALL MODAL
+// ─────────────────────────────────────────────────────────────
+function showAllModal(type) {
+  const logos = type === 'loved' ? state.loved : state.hated;
+  const title = type === 'loved'
+    ? `All loved logos (${logos.length}) — chronological`
+    : `All skipped logos (${logos.length}) — chronological`;
+  document.getElementById('seeall-title').textContent = title;
+  const grid = document.getElementById('seeall-grid');
+  grid.innerHTML = '';
+  logos.forEach(logo => {
+    const initial = logo.name.charAt(0).toUpperCase();
+    const note = state.comments[logo.domain];
+    const card = document.createElement('div');
+    card.className = 'result-logo-card';
+    const cachedSrc = state.imgCache?.[logo.domain];
+    const imgSrc = cachedSrc || `https://img.logo.dev/${logo.domain}?token=${LOGO_API_TOKEN}&size=150`;
+    card.innerHTML = `
+      <div class="result-logo-mini">
+        <img src="${imgSrc}" alt="${logo.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div class="mini-fallback" style="display:none;background:${logo.color}">${initial}</div>
+      </div>
+      <span class="result-logo-name">${logo.name}</span>
+      ${note ? `<span class="result-logo-note">"${note}"</span>` : ''}`;
+    grid.appendChild(card);
+  });
+  document.getElementById('seeall-overlay').classList.add('open');
+}
+function closeSeeAll() {
+  document.getElementById('seeall-overlay').classList.remove('open');
+}
+function closeSeeAllOutside(e) {
+  if (e.target === document.getElementById('seeall-overlay')) closeSeeAll();
+}
+
+// ─────────────────────────────────────────────────────────────
+// SHARE CARD — canvas-generated premium dark card
+// ─────────────────────────────────────────────────────────────
+function showShareCard() {
+  document.getElementById('sharecard-overlay').classList.add('open');
+  // slight delay so modal is visible before we paint
+  requestAnimationFrame(() => renderShareCard());
+}
+function closeShareCard() {
+  document.getElementById('sharecard-overlay').classList.remove('open');
+}
+function closeShareCardOutside(e) {
+  if (e.target === document.getElementById('sharecard-overlay')) closeShareCard();
+}
+
+function renderShareCard() {
+  const canvas = document.getElementById('share-canvas');
+  const W = 600, H = 720;
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const { ind, label, desc, dnaFull, signalTags } = buildSummaryText();
+  const topTraits = (signalTags.length ? signalTags : dnaFull.slice(0,3).map(([t])=>t)).slice(0,3);
+  const L = 46; // ~26px padding * 1.75 scale
+
+  // helper to set letter-spacing safely
+  const ls = v => { if ('letterSpacing' in ctx) ctx.letterSpacing = v; };
+
+  // ── Background: dark radial, lighter at top-center ──
+  const bg = ctx.createRadialGradient(W*0.5, H*0.13, 0, W*0.5, H*0.13, W*0.95);
+  bg.addColorStop(0,    '#484848');
+  bg.addColorStop(0.45, '#272727');
+  bg.addColorStop(1,    '#111111');
+  ctx.fillStyle = bg;
+  ctx.beginPath(); roundRect(ctx, 0, 0, W, H, 42); ctx.fill();
+
+  // ── Border ──
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); roundRect(ctx, 0.5, 0.5, W-1, H-1, 42); ctx.stroke();
+
+  let y = L;
+
+  // ── "Crush Card" ──
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 26px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('-0.3px');
+  y += 26; ctx.fillText('Crush Card', L, y);
+  y += 10;
+
+  // ── Divider ──
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W-L, y); ctx.stroke();
+  y += 36; // margin-bottom ~20px * 1.75
+
+  // ── INDUSTRY label ──
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.font = '600 13px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('1.7px');
+  y += 13; ctx.fillText('INDUSTRY', L, y);
+  y += 5;
+
+  // ── Industry value ──
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 20px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('1.2px');
+  y += 20; ctx.fillText(ind.toUpperCase(), L, y);
+  y += 30; // margin-bottom ~16px * 1.75
+
+  // ── CRUSH TYPE label ──
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.font = '600 13px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('1.7px');
+  y += 13; ctx.fillText('CRUSH TYPE', L, y);
+  y += 6;
+
+  // ── Archetype name — 36px * 1.75 = 63, weight 600, tight tracking ──
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '600 58px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('-2px');
+  const LINE_H = 61;
+  const nameParts = label.includes('&')
+    ? [label.split('&')[0].trim() + ' &', label.split('&')[1].trim()]
+    : wrapText(ctx, label, W - L*2, 2);
+  y += 58;
+  nameParts.forEach((part, i) => ctx.fillText(part, L, y + i * LINE_H));
+  y += (nameParts.length - 1) * LINE_H + 22;
+
+  // ── Description — 12.5px * 1.75 = 22, line-height 160% ──
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '400 20px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('0px');
+  const DESC_LINE_H = 32; // 20px * 1.6
+  const descLines = wrapText(ctx, desc, W - L*2, 3);
+  y += 20;
+  descLines.forEach((line, i) => ctx.fillText(line, L, y + i * DESC_LINE_H));
+  y += (descLines.length - 1) * DESC_LINE_H + 38; // margin-bottom ~22px * 1.75
+
+  // ── STYLE TRAITS label ──
+  ctx.fillStyle = 'rgba(255,255,255,0.32)';
+  ctx.font = '600 13px "Plus Jakarta Sans", system-ui, sans-serif';
+  ls('1.7px');
+  y += 13; ctx.fillText('STYLE TRAITS', L, y);
+  y += 16; // margin-bottom ~9px * 1.75
+
+  // ── Pills: white bg, dark text ──
+  ls('0px');
+  ctx.font = '600 21px "Plus Jakarta Sans", system-ui, sans-serif';
+  let px = L;
+  const PILL_H = 46; // 6px * 1.75 * 2 + text
+  topTraits.forEach(trait => {
+    const tw = ctx.measureText(trait).width;
+    const pw = tw + 50; // 25px padding each side
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); roundRect(ctx, px, y, pw, PILL_H, 100); ctx.fill();
+    ctx.fillStyle = '#111111';
+    ctx.fillText(trait, px + 25, y + 32);
+    px += pw + 10;
+  });
+  y += PILL_H;
+
+  // ── Watermark ──
+  ls('0px');
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  ctx.font = '500 17px "Plus Jakarta Sans", system-ui, sans-serif';
+  const wm = 'logocrush.io';
+  ctx.fillText(wm, W - L - ctx.measureText(wm).width, H - 30);
+}
+
+// draw a rounded rect path (used before fill/stroke)
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// wrap text into max N lines
+function wrapText(ctx, text, maxW, maxLines) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = word;
+      if (lines.length >= maxLines) break;
+    } else {
+      line = test;
+    }
+  }
+  if (lines.length < maxLines && line) lines.push(line);
+  return lines;
+}
+
+function downloadCard() {
+  const canvas = document.getElementById('share-canvas');
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'logo-crush-card.png';
+  a.click();
+  showToast('Card saved!');
+}
+
+function copyCardText() {
+  const { label, ind, dnaFull, signalTags } = buildSummaryText();
+  const traits = (signalTags.length ? signalTags : dnaFull.slice(0,3).map(([t])=>t)).join(' · ');
+  const text = `My Logo Crush type is "${label}" — ${ind} · ${traits}\n\nFind yours at logocrush.io`;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+
+// ─────────────────────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goBack()  { drag.card = null; showScreen('screen-industry'); }
+function restart() {
+  drag.card = null;
+  state = { industries:[], industry:null, queue:[], index:0, loved:[], hated:[], times:[], cardStart:0, comments:{}, imgCache:{} };
+  document.getElementById('notes-section').style.display = 'none';
+  showScreen('screen-industry');
+}
+
+init();
+</script>
+</body>
+</html>
